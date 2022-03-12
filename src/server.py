@@ -4,7 +4,7 @@ from fastapi.responses import HTMLResponse
 import pymongo
 import os
 
-from util import all_files_in_dir, strip_extension
+from util import all_files_in_dir, serialize_documents, strip_extension
 
 MONGO_URI = os.environ.get("MONGO_URI")
 
@@ -18,18 +18,15 @@ if DB_NAME is None or DB_NAME == "":
 
 
 allowed_collections = [
-    "obj_pit_collection",
-    "subj_pit_collection",
-    "calc_obj_tim",
-    "calc_obj_team",
-    "calc_subj_team",
-    "calc_predicted_aim",
-    "calc_predicted_team",
-    "calc_tba_team",
-    "calc_pickability",
-    "calc_tba_tim",
-    "calc_spr",
-    "raw_subj_pit",
+    "raw_obj_pit",
+    "tba_tim",
+    "obj_tim",
+    "obj_team",
+    "subj_team",
+    "predicted_aim",
+    "predicted_team",
+    "tba_team",
+    "pickability",
     "picklist",
 ]
 
@@ -49,9 +46,12 @@ def read_root():
 
 @app.get("/collection/{collection_name}")
 def read_collection(collection_name: str):
-    if collection_name in allowed_collections:
+    if (
+        collection_name in allowed_collections
+        and collection_name in db.list_collection_names()
+    ):
         collection = db[collection_name]
-        return collection.find()
+        return serialize_documents(collection.find())
     else:
         return "Collection not found/allowed"
 

@@ -2,13 +2,13 @@ from enum import Enum
 from typing import Dict, List, Literal, Union
 from fastapi import APIRouter, Security
 from pydantic import BaseModel
-from auth import get_api_key
-from db import client, DB_NAME, allowed_collections
-from util import all_files_in_dir, serialize_documents, strip_extension
+from ..auth import get_api_key
+from ..db import client, DB_NAME, allowed_collections
+from ..util import all_files_in_dir, serialize_documents, strip_extension
 import json
 
-team_lists = list(map(strip_extension, all_files_in_dir("../team-lists")))
-match_schedules = list(map(strip_extension, all_files_in_dir("../match-schedules")))
+team_lists = list(map(strip_extension, all_files_in_dir("team-lists")))
+match_schedules = list(map(strip_extension, all_files_in_dir("match-schedules")))
 
 router = APIRouter(prefix="/api", dependencies=[Security(get_api_key)])
 

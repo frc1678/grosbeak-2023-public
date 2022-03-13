@@ -1,10 +1,10 @@
 from fastapi import HTTPException, Security, status
 from fastapi.security import APIKeyHeader
-from db import api_db
+from .db import api_db
 
 from loguru import logger
 
-from util import serialize_documents
+from .util import serialize_documents
 
 api_key_header_auth = APIKeyHeader(name="Authorization", auto_error=True)
 

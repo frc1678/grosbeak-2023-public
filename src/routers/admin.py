@@ -2,10 +2,10 @@ import uuid
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
-from auth import get_api_key
+from ..auth import get_api_key
 
 
-router = APIRouter(prefix="/api")
+router = APIRouter(prefix="/admin")
 
 
 class NewCredentialRequest(BaseModel):

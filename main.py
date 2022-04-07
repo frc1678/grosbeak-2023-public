@@ -2,8 +2,8 @@ import time
 from typing import Optional
 from fastapi import FastAPI, Request, WebSocket
 from fastapi.responses import HTMLResponse
-from src.db import DB_NAME
-from src.routers import api, admin, live
+from src.env import DB_NAME
+from src.routers import api, admin, live, images
 
 
 app = FastAPI()
@@ -20,6 +20,7 @@ async def add_process_time_header(request: Request, call_next):
 
 app.include_router(api.router)
 app.include_router(admin.router)
+app.include_router(images.router)
 
 @app.websocket("/ws/picklist")
 async def websocket_picklist(websocket: WebSocket, event_key: str = DB_NAME):
@@ -30,3 +31,4 @@ def read_root():
     return """<h1>Welcome to Grosbeak</h1>"""
 
 # print(list(map(lambda x: x.path,app.routes)))
+

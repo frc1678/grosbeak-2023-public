@@ -1,6 +1,8 @@
 import os
 import pymongo
 
+from .env import MONGO_URI
+
 allowed_collections = [
     "raw_obj_pit",
     "tba_tim",
@@ -13,16 +15,6 @@ allowed_collections = [
     "pickability",
     "picklist",
 ]
-
-MONGO_URI = os.environ.get("MONGO_URI")
-
-if MONGO_URI is None or MONGO_URI == "":
-    raise Exception("MONGO_URI environment variable not set")
-
-DB_NAME = os.environ.get("DB_NAME")
-
-if DB_NAME is None or DB_NAME == "":
-    raise Exception("DB_NAME environment variable not set")
 
 
 client = pymongo.MongoClient(MONGO_URI)

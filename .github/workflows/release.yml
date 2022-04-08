@@ -19,7 +19,7 @@ jobs:
         name: Login to Github Container Registry
         uses: docker/login-action@v1 
         with:
-          registry: ${REGISTRY}
+          registry: ${{ env.REGISTRY }}
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
       -
@@ -27,4 +27,4 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: ${REGISTRY}/${{ github.repository }}:${{ github.ref_name }}
+          tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ github.ref_name }}

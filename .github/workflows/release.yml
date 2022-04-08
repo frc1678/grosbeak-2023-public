@@ -18,11 +18,11 @@ jobs:
         name: Login to DockerHub
         uses: docker/login-action@v1 
         with:
-          username: ${{ calvin-laurenson }}
+          username: calvin-laurenson
           password: ${{ GITHUB_TOKEN }}
       -
         name: Build and push
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: calvin-laurenson/grosbeak:${{ github.ref_name }}
+          tags: calvin-laurenson/grosbeak:${{   github.ref_name }}

@@ -7,8 +7,7 @@ from ..auth import get_api_key
 from ..db import client
 from ..env import DB_NAME
 
-# Security(get_api_key)
-router = APIRouter(prefix="/images", dependencies=[])
+router = APIRouter(prefix="/images", dependencies=[Security(get_api_key)])
 
 @router.post("/upload")
 async def upload_image(image: UploadFile = File(...), team_number: str = Form(...), ):

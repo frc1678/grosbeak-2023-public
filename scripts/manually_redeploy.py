@@ -19,6 +19,7 @@ def deploy(config: Env):
     CONTAINER_NAME = "grosbeak-prod"
 
     STOP_CONTAINER = f"docker stop {CONTAINER_NAME}"
+    REMOVE_CONTAINER = f"docker rm {CONTAINER_NAME}"
     REMOVE_IMAGE = f"docker rmi {FULL_IMAGE_NAME}"
     PULL_IMAGE = f"docker pull {FULL_IMAGE_NAME}"
     START_CONTAINER = f"docker run -d --name {CONTAINER_NAME} -p 8002:80 {make_env_args(config)} {FULL_IMAGE_NAME}"
@@ -32,6 +33,7 @@ def deploy(config: Env):
                                universal_newlines=True,
                                bufsize=0)
         ssh_process.stdin.write(STOP_CONTAINER + "\n")
+        ssh_process.stdin.write(REMOVE_CONTAINER + "\n")
         ssh_process.stdin.write(REMOVE_IMAGE + "\n")
         ssh_process.stdin.write(PULL_IMAGE + "\n")
         ssh_process.stdin.write(START_CONTAINER + "\n")

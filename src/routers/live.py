@@ -95,6 +95,8 @@ class MessageResponse:
 
 def get_max_rank(arr: List[Dict[str, Any]]) -> int:
     place_list = set(map(lambda e: e["rank"], arr))
+    if len(place_list) == 0:
+        return 0
     return max(place_list)
 
 
@@ -105,6 +107,7 @@ def update_picklist(to_place: int, from_place: int, event_key: str):
     db = client[event_key]
     collection = db["picklist"]
     current_picklist, _ = get_picklist(event_key)
+    if len(current_picklist) == 0: return
     team_number = current_picklist[from_place - 1]
     logger.info(f"Current picklist: {current_picklist}")
     logger.info(f"Moving {team_number} from {from_place} to {to_place}")
@@ -135,6 +138,7 @@ def toggle_dnp(team_number: int, event_key: str):
     collection = client[event_key]["picklist"]
     current_item = collection.find_one({"team_number": team_number})
     max_rank = get_max_rank(collection.find())
+    if max_rank == 0: return
     if current_item is None:
         logger.error(
             "Tried to toggle dnp for team that doesn't exist. THIS IS BAD I THINK"
@@ -164,6 +168,8 @@ def get_picklist(event_key: str) -> Tuple[List[int], List[int]]:
     logger.info(f"Picklist items len: {len(picklist_items)}")
     max_rank = get_max_rank(picklist_items)
     logger.info(f"Max rank: {max_rank}")
+    if max_rank == 0:
+        return [], []
     team_numbers = []
 
     for i in range(1, max_rank + 1):

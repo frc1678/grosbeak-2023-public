@@ -24,4 +24,4 @@ api_db = client["api"]
 
 
 if not "credentials" in api_db.list_collection_names():
-    api_db["credentials"].insert_one({"description": "Admin Key", "level": 2, "api_key": str(uuid.uuid4())})
+    api_db["credentials"].insert_one({"description": "Admin Key", "level": 2, "api_key": str(uuid.uuid4()).replace("-", "")})

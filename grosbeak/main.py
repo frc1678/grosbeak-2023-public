@@ -2,9 +2,9 @@ import time
 from typing import Optional
 from fastapi import Depends, FastAPI, Request, Security, WebSocket
 from fastapi.responses import HTMLResponse
-from src.auth import get_api_key, protect_websocket
-from src.env import DB_NAME
-from src.routers import api, admin, live, images
+from grosbeak.auth import get_api_key, protect_websocket
+from grosbeak.env import DB_NAME
+from grosbeak.routers import api, admin, live, images
 
 
 app = FastAPI()

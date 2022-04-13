@@ -1,0 +1,27 @@
+[tool.poetry]
+authors = ["Calvin Laurenson <89622328+calvin-laurenson@users.noreply.github.com>"]
+description = ""
+name = "grosbeak"
+version = "0"
+
+[tool.poetry.dependencies]
+Pillow = "9.1.0"
+fastapi = "0.75.0"
+loguru = "0.6.0"
+pydantic = "1.9.0"
+pymongo = {version = "4.0.2", extras = ["srv"]}
+python = "^3.8"
+python-multipart = "0.0.5"
+uvicorn = {version = "0.17.6", extras = ["standard"]}
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
+
+[tool.poetry-dynamic-versioning]
+enable = true
+pattern = "^(?P<base>\\d+(\\.\\d+)*)"
+style = "semver"
+vcs = "git"

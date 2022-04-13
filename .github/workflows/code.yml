@@ -1,0 +1,29 @@
+name: Lint
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: psf/black@stable
+        with:
+          src: "./grosbeak"
+  type-check:
+    runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+        - name: Setup Python
+          uses: actions/setup-python@v2
+          with:
+            python-version: "3.8.10"
+            architecture: x64
+        - naem: "Install dependencies"
+          run: |
+            pip3 install poetry==1.2.0b1
+            poetry config virtualenvs.create false
+            poetry install
+        - name: "Run mypy"
+          run: |
+            mypy

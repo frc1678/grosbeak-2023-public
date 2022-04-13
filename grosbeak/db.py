@@ -2,7 +2,7 @@ import os
 import uuid
 import pymongo
 
-from .env import MONGO_URI
+from .env import env
 
 allowed_collections = [
     "raw_obj_pit",
@@ -18,7 +18,7 @@ allowed_collections = [
 ]
 
 
-client = pymongo.MongoClient(MONGO_URI)
+client: pymongo.MongoClient = pymongo.MongoClient(env.MONGO_URI)
 # db = client[DB_NAME]
 api_db = client["api"]
 

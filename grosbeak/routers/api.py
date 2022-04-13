@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from ..auth import get_api_key
 from ..db import client, allowed_collections
-from ..env import DB_NAME
+from ..env import env
 from ..util import all_files_in_dir, serialize_documents, strip_extension
 import json
 
@@ -16,14 +16,14 @@ router = APIRouter(prefix="/api", dependencies=[Security(get_api_key)])
 
 
 @router.get("/collection/{collection_name}")
-def read_collection(collection_name: str, event_key: str = DB_NAME):
+def read_collection(collection_name: str, event_key: str = env.DB_NAME):
     db = client[event_key]
     if (
         collection_name in allowed_collections
         and collection_name in db.list_collection_names()
     ):
         collection = db[collection_name]
-        return serialize_documents(collection.find())
+        return serialize_documents(list(collection.find()))
     else:
         return "Collection not found/allowed"
 

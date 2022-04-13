@@ -5,7 +5,7 @@ from PIL import Image
 import uuid
 from ..auth import get_api_key
 from ..db import client
-from ..env import DB_NAME
+from ..env import env
 
 router = APIRouter(prefix="/images", dependencies=[Security(get_api_key)])
 
@@ -25,7 +25,7 @@ async def upload_image(
     byte_data = img_buffer.getvalue()
     base64_str = base64.b64encode(byte_data)
     img_id = str(uuid.uuid4())
-    client[DB_NAME]["images"].insert_one(
+    client[env.DB_NAME]["images"].insert_one(
         {"image": base64_str.decode("utf-8"), "id": img_id}
     )
     return {"img_id": img_id}

@@ -10,7 +10,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from loguru import logger
 from pydantic import BaseModel
 
-from ..env import PICKLIST_PASSWORD
+from ..env import env
 from ..db import client
 
 
@@ -29,6 +29,7 @@ class ConnectionManager:
             if connection == websocket:
                 del self.active_connections[id]
                 return id
+        return None
 
     async def message(self, message: Dict, websocket: Optional[WebSocket]):
         if websocket is not None:
@@ -46,7 +47,7 @@ class PicklistConnectionManager(ConnectionManager):
     current_editor: Optional[str] = None
 
     def login(self, password: str, user: str) -> bool:
-        if password == PICKLIST_PASSWORD:
+        if password == env.PICKLIST_PASSWORD:
             self.current_editor = user
             return True
         return False
@@ -138,7 +139,7 @@ def update_picklist(to_place: int, from_place: int, event_key: str):
 def toggle_dnp(team_number: int, event_key: str):
     collection = client[event_key]["picklist"]
     current_item = collection.find_one({"team_number": team_number})
-    max_rank = get_max_rank(collection.find())
+    max_rank = get_max_rank(list(collection.find()))
     if max_rank == 0:
         return
     if current_item is None:
@@ -204,19 +205,19 @@ async def reinform_clients(event_key: str):
 
 async def handle_message(message: dict, websocket_id: str, event_key: str):
     if message["type"] == "picklist_update":
-        data = MessageRequest.PicklistUpdate(**message)
-        update_picklist(data.to_place, data.from_place, event_key)
+        update_request_data = MessageRequest.PicklistUpdate(**message)
+        update_picklist(update_request_data.to_place, update_request_data.from_place, event_key)
         await reinform_clients(event_key)
     elif message["type"] == "dnp_update":
-        data = MessageRequest.DNPToggle(**message)
-        toggle_dnp(data.team_number, event_key)
+        dnp_request_data = MessageRequest.DNPToggle(**message)
+        toggle_dnp(dnp_request_data.team_number, event_key)
         await reinform_clients(event_key)
     elif message["type"] == "start_edit":
         logger.info("Starting edit")
-        data = MessageRequest.StartEdit(**message)
+        start_edit_request_data = MessageRequest.StartEdit(**message)
         await picklist_manager.message(
             MessageResponse.Login(
-                success=picklist_manager.login(data.password, websocket_id)
+                success=picklist_manager.login(start_edit_request_data.password, websocket_id)
             ).dict(),
             picklist_manager.get_connection_by_id(websocket_id),
         )

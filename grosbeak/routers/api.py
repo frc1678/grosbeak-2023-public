@@ -1,4 +1,5 @@
 from enum import Enum
+import os
 from typing import Dict, List, Literal, Union
 from fastapi import APIRouter, Security
 from fastapi.responses import JSONResponse
@@ -8,14 +9,12 @@ from ..db import client, allowed_collections
 from ..env import env
 from ..util import all_files_in_dir, serialize_documents, strip_extension
 import json
-
-team_lists = list(map(strip_extension, all_files_in_dir("team-lists")))
-match_schedules = list(map(strip_extension, all_files_in_dir("match-schedules")))
-
 router = APIRouter(prefix="/api", dependencies=[Security(get_api_key)])
 
+class ErrorMessage(BaseModel):
+    error: str
 
-@router.get("/collection/{collection_name}")
+@router.get("/collection/{collection_name}", responses={404: {"model": ErrorMessage}})
 def read_collection(collection_name: str, event_key: str = env.DB_NAME):
     db = client[event_key]
     if (
@@ -25,7 +24,7 @@ def read_collection(collection_name: str, event_key: str = env.DB_NAME):
         collection = db[collection_name]
         return serialize_documents(list(collection.find()))
     else:
-        return "Collection not found/allowed"
+        return JSONResponse(content={"error": "Collection not found/allowed"}, status_code=404)
 
 
 class ColorEnum(str, Enum):
@@ -42,19 +41,18 @@ class MatchScheduleMatch(BaseModel):
     teams: List[MatchScheduleTeam]
 
 
-@router.get("/match-schedule/{event_key}", response_model=Dict[str, MatchScheduleMatch])
+
+@router.get("/match-schedule/{event_key}", response_model=Dict[str, MatchScheduleMatch], responses={404: {"model": ErrorMessage}})
 def read_match_schedule(event_key: str):
-    if event_key in match_schedules:
-        with open(f"./match-schedules/{event_key}.json") as f:
-            return JSONResponse(content=json.load(f))
-    else:
-        return "Match schedule not found"
+    return read_static_json("match-schedules", event_key)
 
-
-@router.get("/team-list/{event_key}", response_model=List[str])
+@router.get("/team-list/{event_key}", response_model=List[str], responses={404: {"model": ErrorMessage}})
 def read_team_list(event_key: str):
-    if event_key in team_lists:
-        with open(f"./team-lists/{event_key}.json") as f:
+    return read_static_json("team-lists", event_key)
+
+def read_static_json(folder: str, key: str):
+    path = os.path.realpath(f"./static/{folder}/{key}.json")
+    if path.startswith(os.path.realpath(f"./static/{folder}")) and os.path.exists(path):
+        with open(path) as f:
             return JSONResponse(content=json.load(f))
-    else:
-        return "Team list not found"
+    return JSONResponse(content={"error": "Match schedule not found"}, status_code=404)

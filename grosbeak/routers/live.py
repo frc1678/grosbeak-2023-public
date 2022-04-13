@@ -206,7 +206,9 @@ async def reinform_clients(event_key: str):
 async def handle_message(message: dict, websocket_id: str, event_key: str):
     if message["type"] == "picklist_update":
         update_request_data = MessageRequest.PicklistUpdate(**message)
-        update_picklist(update_request_data.to_place, update_request_data.from_place, event_key)
+        update_picklist(
+            update_request_data.to_place, update_request_data.from_place, event_key
+        )
         await reinform_clients(event_key)
     elif message["type"] == "dnp_update":
         dnp_request_data = MessageRequest.DNPToggle(**message)
@@ -217,7 +219,9 @@ async def handle_message(message: dict, websocket_id: str, event_key: str):
         start_edit_request_data = MessageRequest.StartEdit(**message)
         await picklist_manager.message(
             MessageResponse.Login(
-                success=picklist_manager.login(start_edit_request_data.password, websocket_id)
+                success=picklist_manager.login(
+                    start_edit_request_data.password, websocket_id
+                )
             ).dict(),
             picklist_manager.get_connection_by_id(websocket_id),
         )

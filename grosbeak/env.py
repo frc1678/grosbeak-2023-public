@@ -5,6 +5,7 @@ import os
 from typing import Any, Callable, Dict, Optional, Set, Type, TypedDict
 from pydantic import BaseModel
 
+
 def get_envs(envs: Dict[str, Callable[[str], Any]]) -> Dict[str, Optional[str]]:
     env_dict = dict()
     for env in envs:
@@ -25,5 +26,6 @@ class Envs(BaseModel):
     PICKLIST_PASSWORD: str
     DB_NAME: str
     MONGO_URI: str
+
 
 env = Envs(**get_envs(Envs.__annotations__))

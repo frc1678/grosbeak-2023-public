@@ -14,6 +14,7 @@ match_schedules = list(map(strip_extension, all_files_in_dir("match-schedules"))
 
 router = APIRouter(prefix="/api", dependencies=[Security(get_api_key)])
 
+
 @router.get("/collection/{collection_name}")
 def read_collection(collection_name: str, event_key: str = DB_NAME):
     db = client[event_key]
@@ -26,16 +27,20 @@ def read_collection(collection_name: str, event_key: str = DB_NAME):
     else:
         return "Collection not found/allowed"
 
+
 class ColorEnum(str, Enum):
-    red = 'red'
-    blue = 'blue'
+    red = "red"
+    blue = "blue"
+
 
 class MatchScheduleTeam(BaseModel):
     number: str
     color: ColorEnum
 
+
 class MatchScheduleMatch(BaseModel):
     teams: List[MatchScheduleTeam]
+
 
 @router.get("/match-schedule/{event_key}", response_model=Dict[str, MatchScheduleMatch])
 def read_match_schedule(event_key: str):
@@ -44,7 +49,6 @@ def read_match_schedule(event_key: str):
             return JSONResponse(content=json.load(f))
     else:
         return "Match schedule not found"
-
 
 
 @router.get("/team-list/{event_key}", response_model=List[str])

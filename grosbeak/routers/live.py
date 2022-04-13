@@ -107,7 +107,8 @@ def update_picklist(to_place: int, from_place: int, event_key: str):
     db = client[event_key]
     collection = db["picklist"]
     current_picklist, _ = get_picklist(event_key)
-    if len(current_picklist) == 0: return
+    if len(current_picklist) == 0:
+        return
     team_number = current_picklist[from_place - 1]
     logger.info(f"Current picklist: {current_picklist}")
     logger.info(f"Moving {team_number} from {from_place} to {to_place}")
@@ -138,7 +139,8 @@ def toggle_dnp(team_number: int, event_key: str):
     collection = client[event_key]["picklist"]
     current_item = collection.find_one({"team_number": team_number})
     max_rank = get_max_rank(collection.find())
-    if max_rank == 0: return
+    if max_rank == 0:
+        return
     if current_item is None:
         logger.error(
             "Tried to toggle dnp for team that doesn't exist. THIS IS BAD I THINK"
@@ -221,6 +223,7 @@ async def handle_message(message: dict, websocket_id: str, event_key: str):
     elif message["type"] == "stop_edit":
         logger.info("Stopping edit")
         picklist_manager.logout(websocket_id)
+
 
 async def websocket_picklist(websocket: WebSocket, event_key: str):
     connection_id = await picklist_manager.connect(websocket)

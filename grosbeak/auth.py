@@ -17,15 +17,17 @@ def check_auth(api_key: str):
         return None
     return creds_item
 
+
 async def get_api_key(api_key_header: str = Security(api_key_header_auth)):
     logger.debug(f"api_key_header: {api_key_header}")
     auth = check_auth(api_key_header)
     if auth is None:
         raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid API Key",
-            )
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid API Key",
+        )
     return auth
+
 
 async def protect_websocket(websocket: WebSocket, authorization: str = Header(None)):
     auth = check_auth(authorization)

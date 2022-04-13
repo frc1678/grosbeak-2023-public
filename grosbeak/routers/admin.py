@@ -12,6 +12,7 @@ class NewCredentialRequest(BaseModel):
     description: str
     level: int
 
+
 class NewCredentialResponse(BaseModel):
     description: str
     level: int
@@ -19,7 +20,9 @@ class NewCredentialResponse(BaseModel):
 
 
 @router.post("/new-credential", response_model=NewCredentialResponse)
-async def create_credential(*, data: NewCredentialRequest, user_level: dict = Depends(get_api_key)):
+async def create_credential(
+    *, data: NewCredentialRequest, user_level: dict = Depends(get_api_key)
+):
     if user_level["level"] >= 2:
         creds = NewCredentialResponse(
             description=data.description,

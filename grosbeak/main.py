@@ -23,14 +23,18 @@ app.include_router(api.router)
 app.include_router(admin.router)
 app.include_router(images.router)
 
+
 @app.websocket("/ws/picklist")
-async def websocket_picklist(websocket: WebSocket, event_key: str = DB_NAME, auth = Security(protect_websocket)):
+async def websocket_picklist(
+    websocket: WebSocket, event_key: str = DB_NAME, auth=Security(protect_websocket)
+):
     if auth is not None:
         return await live.websocket_picklist(websocket, event_key)
+
 
 @app.get("/", response_class=HTMLResponse)
 def read_root():
     return """<h1>Welcome to Grosbeak</h1>"""
 
-# print(list(map(lambda x: x.path,app.routes)))
 
+# print(list(map(lambda x: x.path,app.routes)))

@@ -21,7 +21,7 @@ async def add_process_time_header(request: Request, call_next):
 
 app.include_router(api.router)
 app.include_router(admin.router)
-app.include_router(images.router)
+# app.include_router(images.router)
 
 
 @app.websocket("/ws/picklist")

@@ -9,7 +9,7 @@ Pillow = "9.1.0"
 fastapi = "0.75.0"
 loguru = "0.6.0"
 pydantic = "1.9.0"
-pymongo = {git = "https://github.com/mongodb/mongo-python-driver.git", rev = "fd512d5c90220a37341aca068bc9e3f969c8eead", extras = ["srv"]}
+pymongo = {git = "https://github.com/mongodb/mongo-python-driver.git", tag = "4.2.0", extras = ["srv"]}
 python = "^3.8"
 python-multipart = "0.0.5"
 uvicorn = {version = "0.17.6", extras = ["standard"]}

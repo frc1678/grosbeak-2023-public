@@ -25,8 +25,6 @@ app.include_router(picklist.router)
 # app.include_router(images.router)
 
 
-
-
 @app.get("/", response_class=HTMLResponse)
 def read_root():
     return """<h1>Welcome to Grosbeak</h1>"""

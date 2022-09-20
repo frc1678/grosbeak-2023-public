@@ -5,6 +5,9 @@ from loguru import logger
 from grosbeak.routers.picklist.live import get_picklist
 from pydantic import BaseModel
 from grosbeak.env import env
+from fastapi.responses import JSONResponse
+from grosbeak.routers.api import ErrorMessage
+
 router = APIRouter(prefix="/rest")
 
 @router.get("/list")
@@ -16,8 +19,14 @@ class PicklistData(BaseModel):
     ranking: List[str]
     dnp: list
 
-@router.put("/list")
-async def update_list(event_key: str = Query(default=env.DB_NAME), data: PicklistData = Body(default=...)):
+class UpdateListResponse(BaseModel):
+    deleted: int
+
+@router.put("/list", responses={401: {"model": ErrorMessage}, 200: {"model": UpdateListResponse}})
+async def update_list(password: str = Query(default=...), event_key: str = Query(default=env.DB_NAME), data: PicklistData = Body(default=...)):
+    if password != env.PICKLIST_PASSWORD:
+        logger.warning("Incorrect password for picklist update")
+        return JSONResponse(status_code=401, content={"error": "Incorrect password"})
     logger.debug(f"Received picklist update request with {len(data.ranking)} ranks and {len(data.dnp)} dnps")
     picklist = client[event_key]["picklist"]
     for i, team in enumerate(data.ranking):

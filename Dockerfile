@@ -12,8 +12,6 @@ RUN poetry install --without dev
 
 COPY ./grosbeak /code/grosbeak
 
-COPY ./team-lists /code/team-lists
-
-COPY ./match-schedules /code/match-schedules
+COPY ./static /code/static
 
 CMD ["uvicorn", "grosbeak.main:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "80"]

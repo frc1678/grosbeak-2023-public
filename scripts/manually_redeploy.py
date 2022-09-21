@@ -19,7 +19,7 @@ def make_env_args(env: Env):
 
 
 def deploy(config: Env):
-    FULL_IMAGE_NAME = "ghcr.io/calvin-laurenson/grosbeak:latest"
+    FULL_IMAGE_NAME = "ghcr.io/frc1678/grosbeak:latest"
     CONTAINER_NAME = "grosbeak-prod"
 
     STOP_CONTAINER = f"docker stop {CONTAINER_NAME}"

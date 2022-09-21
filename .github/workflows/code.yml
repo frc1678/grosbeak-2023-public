@@ -21,7 +21,7 @@ jobs:
           architecture: x64
       - name: "Install dependencies"
         run: |
-          pip3 install poetry==1.2.0b1
+          pip3 install poetry==1.2.0
           poetry config virtualenvs.create false
           poetry install
       - name: "Run mypy"
@@ -39,7 +39,7 @@ jobs:
           architecture: x64
       - name: "Install dependencies"
         run: |
-          pip3 install poetry==1.2.0b1
+          pip3 install poetry==1.2.0
           poetry config virtualenvs.create false
           poetry install
       - name: "Run pytest"

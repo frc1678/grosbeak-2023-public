@@ -4,7 +4,7 @@ from fastapi import Depends, FastAPI, Request, Security, WebSocket
 from fastapi.responses import HTMLResponse
 from grosbeak.auth import get_api_key, protect_websocket
 from grosbeak.env import env
-from grosbeak.routers import api, admin, live, images
+from grosbeak.routers import api, admin, picklist, images
 
 
 app = FastAPI()
@@ -20,16 +20,9 @@ async def add_process_time_header(request: Request, call_next):
 
 
 app.include_router(api.router)
-app.include_router(admin.router)
-app.include_router(images.router)
-
-
-@app.websocket("/ws/picklist")
-async def websocket_picklist(
-    websocket: WebSocket, event_key: str = env.DB_NAME, auth=Security(protect_websocket)
-):
-    if auth is not None:
-        return await live.websocket_picklist(websocket, event_key)
+app.include_router(picklist.router)
+# app.include_router(admin.router)
+# app.include_router(images.router)
 
 
 @app.get("/", response_class=HTMLResponse)

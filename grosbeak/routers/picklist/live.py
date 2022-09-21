@@ -10,8 +10,8 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from loguru import logger
 from pydantic import BaseModel
 
-from ..env import env
-from ..db import client
+from grosbeak.env import env
+from grosbeak.db import client
 
 
 class ConnectionManager:
@@ -183,12 +183,7 @@ def get_picklist(event_key: str) -> Tuple[List[int], List[int]]:
     logger.info(f"Team numbers: {team_numbers}")
     return (
         team_numbers,
-        list(
-            map(
-                lambda x: x["team_number"],
-                list(filter(lambda e: e["dnp"] == True, picklist_items)),
-            )
-        ),
+        [e["team_number"] for e in picklist_items if e["dnp"] == True],
     )
 
 

@@ -19,7 +19,7 @@ def check_auth(api_key: str):
 
 
 async def get_api_key(api_key_header: str = Security(api_key_header_auth)):
-    logger.debug(f"api_key_header: {api_key_header}")
+    # logger.debug(f"api_key_header: {api_key_header}")
     auth = check_auth(api_key_header)
     if auth is None:
         raise HTTPException(
@@ -32,7 +32,7 @@ async def get_api_key(api_key_header: str = Security(api_key_header_auth)):
 async def protect_websocket(websocket: WebSocket, authorization: str = Header(None)):
     auth = check_auth(authorization)
     if auth is None:
-        logger.info(f"Websocket connection denied with auth {auth}")
+        # logger.info(f"Websocket connection denied with auth {auth}")
         await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
     else:
         return auth

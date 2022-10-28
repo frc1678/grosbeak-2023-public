@@ -11,6 +11,7 @@ from ..env import env
 from ..util import all_files_in_dir, serialize_documents, strip_extension
 import json
 from os.path import exists
+
 router = APIRouter(prefix="/api", dependencies=[Security(get_api_key)])
 
 
@@ -69,9 +70,11 @@ class ViewerData(TypedDict):
     """
     This class represents the data that is returned by the viewer API.
     """
+
     team: Dict[str, Dict[str, Any]]
     tim: Dict[str, Dict[str, Dict[str, Any]]]
     aim: Dict[str, Dict[str, Dict[str, AllianceColors]]]
+
 
 def make_key(collection_type: str, document: Dict[str, Any]) -> List[str]:
     """
@@ -85,40 +88,48 @@ def make_key(collection_type: str, document: Dict[str, Any]) -> List[str]:
                 keys.append("red")
             else:
                 keys.append("blue")
-        else:  
+        else:
             keys.append(str(document[header]))
         document.pop(header)
     return keys
 
+
 def get_by_path(dictionary: Dict, path: List[str]) -> Any:
-    """
-    """
+    """ """
     return reduce(lambda d, key: d.get(key) if d else None, path, dictionary)
+
+
 def set_by_path(dictionary: Dict, path: List[str], value: Any):
     """
     Sets a value in a nested dictionary by a list of strings
     """
-    # 
-    reduce(lambda d, key: d.setdefault(key, {}), path[:-1], dictionary)[path[-1]] = value
+    #
+    reduce(lambda d, key: d.setdefault(key, {}), path[:-1], dictionary)[
+        path[-1]
+    ] = value
+
 
 def serialize_viewer_document(document: Dict[str, Any]):
     document.pop("_id", None)
     return document
 
+
 @router.get("/viewer")
-def get_viewer_data(use_strings: bool = False, event_key: str = env.DB_NAME) -> ViewerData:
+def get_viewer_data(
+    use_strings: bool = False, event_key: str = env.DB_NAME
+) -> ViewerData:
     """
     This function uses hard code "collections of collections" to try to relate different collections.
     This data is much easier for viewer to understand
     """
     db = client[event_key]
     data: ViewerData = {"team": {}, "tim": {}, "aim": {}}
-    
+
     for collection, collection_type in COLLECTIONS.items():
         documents = db[collection].find()
         for doc in documents:
             key = make_key(collection_type, doc)
-            # Dictionary made from 
+            # Dictionary made from
             common_doc = get_by_path(data[collection_type], key)
             if common_doc is None:
                 common_doc = {}
@@ -134,7 +145,6 @@ def get_viewer_data(use_strings: bool = False, event_key: str = env.DB_NAME) -> 
             common_doc.update(sanitized)
     return data
 
-    
 
 def read_static_json(folder: str, key: str):
     path = os.path.realpath(f"./static/{folder}/{key}.json")

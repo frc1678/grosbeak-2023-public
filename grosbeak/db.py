@@ -24,9 +24,8 @@ COLLECTIONS: Dict[str, DocumentTypes] = {
 COLLECTION_KEYS: Dict[DocumentTypes, List[str]] = {
     "team": ["team_number"],
     "tim": ["match_number", "team_number"],
-    "aim": ["match_number", "alliance_color_is_red"]
+    "aim": ["match_number", "alliance_color_is_red"],
 }
-
 
 
 client: pymongo.MongoClient = pymongo.MongoClient(env.MONGO_URI)

@@ -1,21 +1,32 @@
 import os
+from typing import Dict, List, Literal
 import uuid
 import pymongo
 
 from .env import env
 
-allowed_collections = [
-    "raw_obj_pit",
-    "tba_tim",
-    "obj_tim",
-    "obj_team",
-    "subj_team",
-    "predicted_aim",
-    "predicted_team",
-    "tba_team",
-    "pickability",
-    "picklist",
-]
+DocumentTypes = Literal["team", "tim", "aim"]
+AllianceColors = Literal["red", "blue"]
+
+COLLECTIONS: Dict[str, DocumentTypes] = {
+    "raw_obj_pit": "team",
+    "tba_tim": "tim",
+    "obj_tim": "tim",
+    "obj_team": "team",
+    "subj_team": "team",
+    "predicted_aim": "aim",
+    "predicted_team": "team",
+    "tba_team": "team",
+    "pickability": "team",
+    "picklist": "team",
+}
+
+COLLECTION_KEYS: Dict[DocumentTypes, List[str]] = {
+    "team": ["team_number"],
+    "tim": ["match_number", "team_number"],
+    "aim": ["match_number", "alliance_color_is_red"]
+}
+
 
 
 client: pymongo.MongoClient = pymongo.MongoClient(env.MONGO_URI)

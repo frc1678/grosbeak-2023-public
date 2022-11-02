@@ -11,9 +11,10 @@ from ..env import env
 from ..util import all_files_in_dir, serialize_documents, strip_extension
 import json
 from os.path import exists
-
+from grosbeak.routers.notes import router as notes_router
 router = APIRouter(prefix="/api", dependencies=[Security(get_api_key)])
 
+router.include_router(notes_router)
 
 class ErrorMessage(BaseModel):
     error: str

@@ -1,10 +1,11 @@
 import time
 from typing import Optional
 from fastapi import Depends, FastAPI, Request, Security, WebSocket
-from fastapi.responses import HTMLResponse
+from fastapi.responses import FileResponse
 from grosbeak.auth import get_api_key, protect_websocket
 from grosbeak.env import env
 from grosbeak.routers import api, admin, picklist, images
+from fastapi.staticfiles import StaticFiles
 
 
 app = FastAPI()
@@ -21,13 +22,13 @@ async def add_process_time_header(request: Request, call_next):
 
 app.include_router(api.router)
 app.include_router(picklist.router)
-# app.include_router(admin.router)
+app.include_router(admin.router)
 # app.include_router(images.router)
 
-
-@app.get("/", response_class=HTMLResponse)
-def read_root():
-    return """<h1>Welcome to Grosbeak</h1>"""
+@app.get("/")
+async def root():
+    return FileResponse("web/index.html")
+app.mount("/", StaticFiles(directory="web"), name="web")
 
 
 # print(list(map(lambda x: x.path,app.routes)))

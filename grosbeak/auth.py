@@ -13,6 +13,7 @@ creds_collection = api_db["credentials"]
 
 def check_auth(api_key: str):
     creds_item = creds_collection.find_one({"api_key": api_key})
+    # logger.debug(creds_item)
     if creds_item is None:
         return None
     return creds_item

@@ -6,15 +6,17 @@ from fastapi import APIRouter, Security
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from ..auth import get_api_key
-from ..db import COLLECTION_KEYS, AllianceColors, client, COLLECTIONS
+from ..db import COLLECTION_KEYS, STATIC_FILE_TYPES, AllianceColors, client, COLLECTIONS
 from ..env import env
 from ..util import all_files_in_dir, serialize_documents, strip_extension
 import json
 from os.path import exists
 from grosbeak.routers.notes import router as notes_router
+
 router = APIRouter(prefix="/api", dependencies=[Security(get_api_key)])
 
 router.include_router(notes_router)
+
 
 class ErrorMessage(BaseModel):
     error: str
@@ -55,7 +57,7 @@ class MatchScheduleMatch(BaseModel):
     responses={404: {"model": ErrorMessage}},
 )
 def read_match_schedule(event_key: str):
-    return read_static_json("match-schedules", event_key)
+    return read_static_json("match-schedule", event_key)
 
 
 @router.get(
@@ -64,7 +66,7 @@ def read_match_schedule(event_key: str):
     responses={404: {"model": ErrorMessage}},
 )
 def read_team_list(event_key: str):
-    return read_static_json("team-lists", event_key)
+    return read_static_json("team-list", event_key)
 
 
 class ViewerData(TypedDict):
@@ -147,9 +149,15 @@ def get_viewer_data(
     return data
 
 
-def read_static_json(folder: str, key: str):
-    path = os.path.realpath(f"./static/{folder}/{key}.json")
-    if path.startswith(os.path.realpath(f"./static/{folder}")) and os.path.exists(path):
-        with open(path) as f:
-            return JSONResponse(content=json.load(f))
-    return JSONResponse(content={"error": "Match schedule not found"}, status_code=404)
+def read_static_json(static_type: str, event_key: str):
+    if static_type not in STATIC_FILE_TYPES:
+        return JSONResponse(
+            content={"error": "Static file type not found/allowed"},
+            status_code=404,
+        )
+    collection = client["static"][static_type]
+    document = collection.find_one({"event_key": event_key})
+    if document is None:
+        return JSONResponse(content={"error": "Static file not found"}, status_code=404)
+    else:
+        return JSONResponse(content=document["data"])

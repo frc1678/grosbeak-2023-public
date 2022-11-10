@@ -27,6 +27,7 @@ COLLECTION_KEYS: Dict[DocumentTypes, List[str]] = {
     "aim": ["match_number", "alliance_color_is_red"],
 }
 
+STATIC_FILE_TYPES = {"match-schedule", "team-list"}
 
 client: pymongo.MongoClient = pymongo.MongoClient(env.MONGO_URI)
 # db = client[DB_NAME]

@@ -7,7 +7,9 @@ from grosbeak.env import env
 from grosbeak.util import serialize_documents
 from pydantic import BaseModel
 from pydantic.types import constr
+
 router = APIRouter(prefix="/notes", dependencies=[Security(get_api_key)])
+
 
 @router.get("/all")
 def all_notes(event_key: str = env.DB_NAME):
@@ -15,6 +17,7 @@ def all_notes(event_key: str = env.DB_NAME):
     collection = db["notes"]
     docs = serialize_documents(collection.find())
     return {doc["team_number"]: doc["notes"] for doc in docs}
+
 
 @router.get("/team/{team_number}")
 def team_notes(team_number: str, event_key: str = env.DB_NAME):
@@ -29,6 +32,7 @@ def team_notes(team_number: str, event_key: str = env.DB_NAME):
 class PutTeamNotes(BaseModel):
     team_number: constr(min_length=1)
     notes: str
+
 
 @router.put("/team/")
 def update_team_notes(data: PutTeamNotes, event_key: str = env.DB_NAME):

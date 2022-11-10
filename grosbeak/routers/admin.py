@@ -36,7 +36,6 @@ async def create_credential(
         return creds
 
 
-
 class NewStaticRequest(BaseModel):
     type: str
     event_key: constr(min_length=5)
@@ -47,10 +46,13 @@ class NewStaticRequest(BaseModel):
         assert v in STATIC_FILE_TYPES, "Invalid type"
         return v
 
+
 @router.put("/static")
 def new_match_schedule(data: NewStaticRequest, user_level: dict = Depends(get_api_key)):
     if user_level["level"] < 2:
         return JSONResponse(status_code=403)
     collection = client["static"][data.type]
-    collection.find_one_and_update({"event_key": data.event_key}, {"$set": {"data": data.data}}, upsert=True)
+    collection.find_one_and_update(
+        {"event_key": data.event_key}, {"$set": {"data": data.data}}, upsert=True
+    )
     return {"error": None}

@@ -12,9 +12,11 @@ from ..util import all_files_in_dir, serialize_documents, strip_extension
 import json
 from os.path import exists
 from grosbeak.routers.notes import router as notes_router
+
 router = APIRouter(prefix="/api", dependencies=[Security(get_api_key)])
 
 router.include_router(notes_router)
+
 
 class ErrorMessage(BaseModel):
     error: str
@@ -156,9 +158,6 @@ def read_static_json(static_type: str, event_key: str):
     collection = client["static"][static_type]
     document = collection.find_one({"event_key": event_key})
     if document is None:
-        return JSONResponse(
-            content={"error": "Static file not found"}, status_code=404
-        )
+        return JSONResponse(content={"error": "Static file not found"}, status_code=404)
     else:
         return JSONResponse(content=document["data"])
-

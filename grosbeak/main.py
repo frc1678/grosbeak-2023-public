@@ -25,9 +25,12 @@ app.include_router(picklist.router)
 app.include_router(admin.router)
 # app.include_router(images.router)
 
+
 @app.get("/")
 async def root():
     return FileResponse("web/index.html")
+
+
 app.mount("/", StaticFiles(directory="web"), name="web")
 
 

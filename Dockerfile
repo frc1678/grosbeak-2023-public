@@ -12,6 +12,6 @@ RUN poetry install --without dev
 
 COPY ./grosbeak /code/grosbeak
 
-COPY ./static /code/static
+COPY ./web /code/web
 
 CMD ["uvicorn", "grosbeak.main:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "80"]

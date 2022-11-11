@@ -132,7 +132,7 @@ def get_viewer_data(
     if cached_viewer_data is not None and cached_viewer_data.hash == db_hash:
         # print("CACHE HIT")
         return JSONResponse(content=cached_viewer_data.data, headers={"ETag": db_hash})
-    print("CACHE MISS")
+    # print("CACHE MISS")
     data: ViewerData = {"team": {}, "tim": {}, "aim": {}}
 
     for collection, collection_type in COLLECTIONS.items():

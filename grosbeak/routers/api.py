@@ -6,7 +6,7 @@ from fastapi import APIRouter, Security, Header
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from grosbeak.auth import get_api_key
-from grosbeak.db import COLLECTION_KEYS, STATIC_FILE_TYPES, CachedViewerData, viewer_data_cache, ViewerData, client, COLLECTIONS
+from grosbeak.db import COLLECTION_KEYS, STATIC_FILE_TYPES, CachedViewerData, viewer_data_cache, ViewerData, client, COLLECTIONS, oplog
 from grosbeak.env import env
 from grosbeak.util import all_files_in_dir, serialize_documents, strip_extension
 import json
@@ -117,15 +117,22 @@ def get_viewer_data(
     This data is much easier for viewer to understand
     """
     db = client[event_key]
-
-    db_hash = db.command("dbHash", collections=list(COLLECTIONS.keys()))["md5"]
+    oplog_ns = [f"{event_key}.{c}" for c in COLLECTIONS.keys()]
+    oplog_result = oplog.find_one({"ns": {"$in": oplog_ns}}, sort=[("$natural", -1)])
+    if oplog_result is None:
+        return {"team": {}, "tim": {}, "aim": {}}
+    oplog_hash = oplog_result["ui"].as_uuid()
+    db_hash = str(oplog_hash)
+    # print(f"{db_hash=}")
     if if_none_match is not None and if_none_match == db_hash:
+        # print("CACHE HIT")
         return JSONResponse(status_code=304, headers={"ETag": db_hash})
-
     cached_viewer_data = viewer_data_cache.get(event_key, None)
+    # print(f"{cached_viewer_data=}")
     if cached_viewer_data is not None and cached_viewer_data.hash == db_hash:
+        # print("CACHE HIT")
         return JSONResponse(content=cached_viewer_data.data, headers={"ETag": db_hash})
-
+    print("CACHE MISS")
     data: ViewerData = {"team": {}, "tim": {}, "aim": {}}
 
     for collection, collection_type in COLLECTIONS.items():

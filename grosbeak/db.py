@@ -32,7 +32,7 @@ STATIC_FILE_TYPES = {"match-schedule", "team-list"}
 client: pymongo.MongoClient = pymongo.MongoClient(env.MONGO_URI)
 # db = client[DB_NAME]
 api_db = client["api"]
-
+oplog = client["local"]["oplog.rs"]
 
 if not "credentials" in api_db.list_collection_names():
     api_db["credentials"].insert_one(

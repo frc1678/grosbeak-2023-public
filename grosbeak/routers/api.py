@@ -2,13 +2,13 @@ from enum import Enum
 from functools import reduce
 import os
 from typing import Any, Dict, List, Literal, TypedDict, Union
-from fastapi import APIRouter, Security, Header
+from fastapi import APIRouter, Security
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from grosbeak.auth import get_api_key
-from grosbeak.db import COLLECTION_KEYS, STATIC_FILE_TYPES, CachedViewerData, viewer_data_cache, ViewerData, client, COLLECTIONS, oplog
-from grosbeak.env import env
-from grosbeak.util import all_files_in_dir, serialize_documents, strip_extension
+from ..auth import get_api_key
+from ..db import COLLECTION_KEYS, STATIC_FILE_TYPES, AllianceColors, client, COLLECTIONS
+from ..env import env
+from ..util import all_files_in_dir, serialize_documents, strip_extension
 import json
 from os.path import exists
 from grosbeak.routers.notes import router as notes_router
@@ -69,6 +69,15 @@ def read_team_list(event_key: str):
     return read_static_json("team-list", event_key)
 
 
+class ViewerData(TypedDict):
+    """
+    This class represents the data that is returned by the viewer API.
+    """
+
+    team: Dict[str, Dict[str, Any]]
+    tim: Dict[str, Dict[str, Dict[str, Any]]]
+    aim: Dict[str, Dict[str, Dict[str, AllianceColors]]]
+
 
 def make_key(collection_type: str, document: Dict[str, Any]) -> List[str]:
     """
@@ -110,29 +119,13 @@ def serialize_viewer_document(document: Dict[str, Any]):
 
 @router.get("/viewer")
 def get_viewer_data(
-    use_strings: bool = False, event_key: str = env.DB_NAME, if_none_match: Union[str, None] = Header(default=None)
+    use_strings: bool = False, event_key: str = env.DB_NAME
 ) -> ViewerData:
     """
     This function uses hard code "collections of collections" to try to relate different collections.
     This data is much easier for viewer to understand
     """
     db = client[event_key]
-    oplog_ns = [f"{event_key}.{c}" for c in COLLECTIONS.keys()]
-    oplog_result = oplog.find_one({"ns": {"$in": oplog_ns}}, sort=[("$natural", -1)])
-    if oplog_result is None:
-        return {"team": {}, "tim": {}, "aim": {}}
-    oplog_hash = oplog_result["ui"].as_uuid()
-    db_hash = str(oplog_hash)
-    # print(f"{db_hash=}")
-    if if_none_match is not None and if_none_match == db_hash:
-        # print("CACHE HIT")
-        return JSONResponse(status_code=304, headers={"ETag": db_hash})
-    cached_viewer_data = viewer_data_cache.get(event_key, None)
-    # print(f"{cached_viewer_data=}")
-    if cached_viewer_data is not None and cached_viewer_data.hash == db_hash:
-        # print("CACHE HIT")
-        return JSONResponse(content=cached_viewer_data.data, headers={"ETag": db_hash})
-    # print("CACHE MISS")
     data: ViewerData = {"team": {}, "tim": {}, "aim": {}}
 
     for collection, collection_type in COLLECTIONS.items():
@@ -153,10 +146,7 @@ def get_viewer_data(
                     if not isinstance(v, (float, int, str, bool)):
                         sanitized[k] = str(v)
             common_doc.update(sanitized)
-    # Update the cache
-    # TODO: The database might have changed by now, so we should check the hash again (or something better)
-    viewer_data_cache[event_key] = CachedViewerData(data=data, hash=db_hash)
-    return JSONResponse(content=data, headers={"ETag": db_hash})
+    return data
 
 
 def read_static_json(static_type: str, event_key: str):

@@ -1,8 +1,8 @@
 import os
-from typing import Any, Dict, List, Literal, TypedDict
+from typing import Dict, List, Literal
 import uuid
 import pymongo
-from dataclasses import dataclass
+
 from .env import env
 
 DocumentTypes = Literal["team", "tim", "aim"]
@@ -32,7 +32,7 @@ STATIC_FILE_TYPES = {"match-schedule", "team-list"}
 client: pymongo.MongoClient = pymongo.MongoClient(env.MONGO_URI)
 # db = client[DB_NAME]
 api_db = client["api"]
-oplog = client["local"]["oplog.rs"]
+
 
 if not "credentials" in api_db.list_collection_names():
     api_db["credentials"].insert_one(
@@ -42,21 +42,3 @@ if not "credentials" in api_db.list_collection_names():
             "api_key": str(uuid.uuid4()).replace("-", ""),
         }
     )
-
-
-class ViewerData(TypedDict):
-    """
-    This class represents the data that is returned by the viewer API.
-    """
-
-    team: Dict[str, Dict[str, Any]]
-    tim: Dict[str, Dict[str, Dict[str, Any]]]
-    aim: Dict[str, Dict[str, Dict[str, AllianceColors]]]
-
-
-@dataclass
-class CachedViewerData:
-    hash: str
-    data: ViewerData
-
-viewer_data_cache: Dict[str, CachedViewerData] = {}

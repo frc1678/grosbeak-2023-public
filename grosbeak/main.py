@@ -4,7 +4,7 @@ from fastapi import Depends, FastAPI, Request, Security, WebSocket
 from fastapi.responses import FileResponse
 from grosbeak.auth import get_api_key, protect_websocket
 from grosbeak.env import env
-from grosbeak.routers import api, admin, picklist, images
+from grosbeak.routers import api, admin, picklist
 from fastapi.staticfiles import StaticFiles
 
 
@@ -23,7 +23,6 @@ async def add_process_time_header(request: Request, call_next):
 app.include_router(api.router)
 app.include_router(picklist.router)
 app.include_router(admin.router)
-# app.include_router(images.router)
 
 
 @app.get("/")

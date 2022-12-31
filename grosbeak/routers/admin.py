@@ -42,7 +42,7 @@ class NewStaticRequest(BaseModel):
     data: Union[dict, list]
 
     @validator("type")
-    def is_valid_type(cls, v):
+    def is_valid_type(self, v):
         assert v in STATIC_FILE_TYPES, "Invalid type"
         return v
 

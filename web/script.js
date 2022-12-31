@@ -13,8 +13,6 @@ function readAsText(inputElement) {
     })
 }
 
-
-
 async function main() {
     const ajv = new Ajv()
     const matchScheduleSchema = await (await fetch("/schemas/match-schedule.json")).json()
@@ -24,45 +22,44 @@ async function main() {
 
     const apiKeyInput = document.getElementById("apikey")
     const eventKeyInput = document.getElementById("eventkey")
+
     function getParams() {
         return {apikey: apiKeyInput.value, eventkey: eventKeyInput.value}
     }
+
     async function uploadFile(type) {
         const {eventkey, apikey} = getParams()
-            if (!eventkey) {
-                alert("No event key")
+        if (!eventkey) {
+            alert("No event key")
+            return
+        }
+        if (!apikey) {
+            alert("No api key")
+            return
+        }
+        let input
+        switch (type) {
+            case "match-schedule":
+                input = matchScheduleFileInput
+                break;
+            case "team-list":
+                input = teamListFileInput
+                break;
+            default:
                 return
-            }
-            if (!apikey) {
-                alert("No api key")
-                return
-            }
-            let input
-            switch (type) {
-                case "match-schedule":
-                    input = matchScheduleFileInput
-                    break;
-                case "team-list":
-                    input = teamListFileInput
-                    break;
-                default:
-                    return
-            }
-            const fileText = await readAsText(input)
-            const data = JSON.parse(fileText)
-            const response = await fetch("/admin/static", {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": apikey
-                },
-                body: JSON.stringify({type, event_key: eventkey, data})
-            })
-            if (response.ok) {
-                alert(`${type} uploaded successfully`)
-            } else {
-                alert(`Error uploading ${type}: ${await response.text()}`)
-            }
+        }
+        const fileText = await readAsText(input)
+        const data = JSON.parse(fileText)
+        const response = await fetch("/admin/static", {
+            method: "PUT", headers: {
+                "Content-Type": "application/json", "Authorization": apikey
+            }, body: JSON.stringify({type, event_key: eventkey, data})
+        })
+        if (response.ok) {
+            alert(`${type} uploaded successfully`)
+        } else {
+            alert(`Error uploading ${type}: ${await response.text()}`)
+        }
     }
 
     const matchScheduleSubmitButton = document.getElementById("submit-matchschedule")
@@ -97,6 +94,5 @@ async function main() {
     })
 
 }
-
 
 main()

@@ -1,17 +1,15 @@
 """
 https://github.com/tiangolo/fastapi/issues/98#issuecomment-907452636
 """
-from enum import Enum
-import json
-import math
 from typing import Any, Dict, List, Literal, Optional, Tuple
 from uuid import uuid4
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+
+from fastapi import WebSocket, WebSocketDisconnect
 from loguru import logger
 from pydantic import BaseModel
 
-from grosbeak.env import env
 from grosbeak.db import client
+from grosbeak.env import env
 
 
 class ConnectionManager:
@@ -147,7 +145,7 @@ def toggle_dnp(team_number: int, event_key: str):
             "Tried to toggle dnp for team that doesn't exist. THIS IS BAD I THINK"
         )
         return
-    if current_item["dnp"] == False:
+    if not current_item["dnp"]:
         collection.update_one(
             {"team_number": team_number},
             {"$set": {"dnp": True, "rank": -1}},

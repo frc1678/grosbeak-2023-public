@@ -8,10 +8,10 @@ version = "0"
 fastapi = "~0.75"
 loguru = "~0.6"
 pydantic = "~1.9"
-pymongo = {git = "https://github.com/mongodb/mongo-python-driver.git", tag = "4.2.0", extras = ["srv"]}
+pymongo = { git = "https://github.com/mongodb/mongo-python-driver.git", tag = "4.2.0", extras = ["srv"] }
 python = "^3.8"
 python-multipart = "~0.0.5"
-uvicorn = {version = "~0.17", extras = ["standard"]}
+uvicorn = { version = "~0.17", extras = ["standard"] }
 
 [tool.poetry.group.dev.dependencies]
 black = "~22.3"

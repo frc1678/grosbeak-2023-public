@@ -1,10 +1,7 @@
-from fastapi import Depends, HTTPException, Header, Security, WebSocket, status
+from fastapi import HTTPException, Header, Security, WebSocket, status
 from fastapi.security import APIKeyHeader
+
 from .db import api_db
-
-from loguru import logger
-
-from .util import serialize_documents
 
 api_key_header_auth = APIKeyHeader(name="Authorization", auto_error=True)
 

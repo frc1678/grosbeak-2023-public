@@ -1,29 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Picklist</title>
     <script>
-      let connection = null;
+        let connection = null;
 
-      function handleConnect() {
-        connection = new WebSocket("ws://localhost:8000/ws/picklist");
-        connection.onmessage = (m) => {
-          console.log(m);
-            const data = JSON.parse(m.data);
-          
-          ele = document.createElement("li")
-          ele.innerText = JSON.stringify(data); 
-          document.getElementById("picklist").appendChild(ele)
-        };
-      }
+        function handleConnect() {
+            connection = new WebSocket("ws://localhost:8000/ws/picklist");
+            connection.onmessage = (m) => {
+                console.log(m);
+                const data = JSON.parse(m.data);
+
+                ele = document.createElement("li")
+                ele.innerText = JSON.stringify(data);
+                document.getElementById("picklist").appendChild(ele)
+            };
+        }
     </script>
-  </head>
-  <body>
-    <button onclick="handleConnect()">Connect</button>
-    <div id="received"></div>
-    <div id="picklist"></div>
-  </body>
+</head>
+<body>
+<button onclick="handleConnect()">Connect</button>
+<div id="received"></div>
+<div id="picklist"></div>
+</body>
 </html>

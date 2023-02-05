@@ -1,6 +1,6 @@
-import os
-from typing import Dict, List, Literal
 import uuid
+from typing import Dict, List, Literal
+
 import pymongo
 
 from .env import env
@@ -33,8 +33,7 @@ client: pymongo.MongoClient = pymongo.MongoClient(env.MONGO_URI)
 # db = client[DB_NAME]
 api_db = client["api"]
 
-
-if not "credentials" in api_db.list_collection_names():
+if "credentials" not in api_db.list_collection_names():
     api_db["credentials"].insert_one(
         {
             "description": "Admin Key",

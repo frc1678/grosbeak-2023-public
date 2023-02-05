@@ -1,12 +1,10 @@
 import time
-from typing import Optional
-from fastapi import Depends, FastAPI, Request, Security, WebSocket
+
+from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse
-from grosbeak.auth import get_api_key, protect_websocket
-from grosbeak.env import env
-from grosbeak.routers import api, admin, picklist
 from fastapi.staticfiles import StaticFiles
 
+from grosbeak.routers import api, admin, picklist
 
 app = FastAPI()
 

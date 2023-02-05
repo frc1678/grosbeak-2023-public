@@ -6,7 +6,7 @@ from fastapi import APIRouter, Security
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from ..auth import get_api_key
-from ..db import COLLECTION_KEYS, STATIC_FILE_TYPES, AllianceColors, client, COLLECTIONS
+from ..db import COLLECTION_KEYS, STATIC_FILE_TYPES, AllianceColors, client, COLLECTIONS, DocumentTypes
 from ..env import env
 from ..util import all_files_in_dir, serialize_documents, strip_extension
 import json
@@ -79,7 +79,7 @@ class ViewerData(TypedDict):
     aim: Dict[str, Dict[str, Dict[str, AllianceColors]]]
 
 
-def make_key(collection_type: str, document: Dict[str, Any]) -> List[str]:
+def make_key(collection_type: DocumentTypes, document: Dict[str, Any]) -> List[str]:
     """
     Makes a key from a team, tim, or aim document for referencing
     """
@@ -99,7 +99,7 @@ def make_key(collection_type: str, document: Dict[str, Any]) -> List[str]:
 
 def get_by_path(dictionary: Dict, path: List[str]) -> Any:
     """ """
-    return reduce(lambda d, key: d.get(key) if d else None, path, dictionary)
+    return reduce(lambda d, key: d.get(key) if d else None, path, dictionary) # type: ignore
 
 
 def set_by_path(dictionary: Dict, path: List[str], value: Any):

@@ -2,7 +2,7 @@ from typing import Union
 import uuid
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, validator, Field
 from pydantic.types import constr
 
 from ..auth import get_api_key
@@ -38,7 +38,7 @@ async def create_credential(
 
 class NewStaticRequest(BaseModel):
     type: str
-    event_key: constr(min_length=5)
+    event_key: str =  Field(..., min_length=5)
     data: Union[dict, list]
 
     @validator("type")

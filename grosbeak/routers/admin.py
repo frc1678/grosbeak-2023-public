@@ -38,7 +38,7 @@ async def create_credential(
 
 class NewStaticRequest(BaseModel):
     type: str
-    event_key: str =  Field(..., min_length=5)
+    event_key: str = Field(..., min_length=5)
     data: Union[dict, list]
 
     @validator("type")

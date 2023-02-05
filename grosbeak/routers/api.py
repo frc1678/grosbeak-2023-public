@@ -6,7 +6,14 @@ from fastapi import APIRouter, Security
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from ..auth import get_api_key
-from ..db import COLLECTION_KEYS, STATIC_FILE_TYPES, AllianceColors, client, COLLECTIONS, DocumentTypes
+from ..db import (
+    COLLECTION_KEYS,
+    STATIC_FILE_TYPES,
+    AllianceColors,
+    client,
+    COLLECTIONS,
+    DocumentTypes,
+)
 from ..env import env
 from ..util import all_files_in_dir, serialize_documents, strip_extension
 import json
@@ -99,7 +106,7 @@ def make_key(collection_type: DocumentTypes, document: Dict[str, Any]) -> List[s
 
 def get_by_path(dictionary: Dict, path: List[str]) -> Any:
     """ """
-    return reduce(lambda d, key: d.get(key) if d else None, path, dictionary) # type: ignore
+    return reduce(lambda d, key: d.get(key) if d else None, path, dictionary)  # type: ignore
 
 
 def set_by_path(dictionary: Dict, path: List[str], value: Any):

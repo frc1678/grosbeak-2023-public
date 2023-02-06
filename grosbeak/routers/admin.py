@@ -50,7 +50,7 @@ class NewStaticRequest(BaseModel):
 @router.put("/static")
 def new_match_schedule(data: NewStaticRequest, user_level: dict = Depends(get_api_key)):
     if user_level["level"] < 2:
-        return JSONResponse(status_code=403)
+        return JSONResponse(content= {"error": f"Unauthorized level {user_level['level']} user"},status_code=403)
     collection = client["static"][data.type]
     collection.find_one_and_update(
         {"event_key": data.event_key}, {"$set": {"data": data.data}}, upsert=True

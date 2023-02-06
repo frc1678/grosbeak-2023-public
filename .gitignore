@@ -512,3 +512,5 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,linux,python,jetbrains,dotenv,git,visualstudiocode,kate,vim,kdevelop4,sublimetext,notepadpp,emacs,textmate
+
+.prod.env

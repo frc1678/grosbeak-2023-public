@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Security
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from pydantic.types import constr
 
 from grosbeak.auth import get_api_key
@@ -14,7 +14,7 @@ router = APIRouter(prefix="/notes", dependencies=[Security(get_api_key)])
 def all_notes(event_key: str = env.DB_NAME):
     db = client[event_key]
     collection = db["notes"]
-    docs = serialize_documents(collection.find())
+    docs = serialize_documents(list(collection.find()))
     return {doc["team_number"]: doc["notes"] for doc in docs}
 
 
@@ -29,7 +29,7 @@ def team_notes(team_number: str, event_key: str = env.DB_NAME):
 
 
 class PutTeamNotes(BaseModel):
-    team_number: constr(min_length=1)
+    team_number: str = Field(..., min_length=1)
     notes: str
 
 

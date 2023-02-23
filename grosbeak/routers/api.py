@@ -1,7 +1,7 @@
 from enum import Enum
 from functools import reduce
 import os
-from typing import Any, Dict, List, Literal, TypedDict, Union
+from typing import Any, TypedDict
 from fastapi import APIRouter, Security
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
@@ -55,12 +55,12 @@ class MatchScheduleTeam(BaseModel):
 
 
 class MatchScheduleMatch(BaseModel):
-    teams: List[MatchScheduleTeam]
+    teams: list[MatchScheduleTeam]
 
 
 @router.get(
     "/match-schedule/{event_key}",
-    response_model=Dict[str, MatchScheduleMatch],
+    response_model=dict[str, MatchScheduleMatch],
     responses={404: {"model": ErrorMessage}},
 )
 def read_match_schedule(event_key: str):
@@ -69,7 +69,7 @@ def read_match_schedule(event_key: str):
 
 @router.get(
     "/team-list/{event_key}",
-    response_model=List[str],
+    response_model=list[str],
     responses={404: {"model": ErrorMessage}},
 )
 def read_team_list(event_key: str):
@@ -81,12 +81,12 @@ class ViewerData(TypedDict):
     This class represents the data that is returned by the viewer API.
     """
 
-    team: Dict[str, Dict[str, Any]]
-    tim: Dict[str, Dict[str, Dict[str, Any]]]
-    aim: Dict[str, Dict[str, Dict[str, AllianceColors]]]
+    team: dict[str, dict[str, Any]]
+    tim: dict[str, dict[str, dict[str, Any]]]
+    aim: dict[str, dict[AllianceColors, dict[str, Any]]]
 
 
-def make_key(collection_type: DocumentTypes, document: Dict[str, Any]) -> List[str]:
+def make_key(collection_type: DocumentTypes, document: dict[str, Any]) -> list[str]:
     """
     Makes a key from a team, tim, or aim document for referencing
     """
@@ -104,12 +104,12 @@ def make_key(collection_type: DocumentTypes, document: Dict[str, Any]) -> List[s
     return keys
 
 
-def get_by_path(dictionary: Dict, path: List[str]) -> Any:
+def get_by_path(dictionary: dict, path: list[str]) -> Any:
     """ """
     return reduce(lambda d, key: d.get(key) if d else None, path, dictionary)  # type: ignore
 
 
-def set_by_path(dictionary: Dict, path: List[str], value: Any):
+def set_by_path(dictionary: dict, path: list[str], value: Any):
     """
     Sets a value in a nested dictionary by a list of strings
     """
@@ -119,7 +119,7 @@ def set_by_path(dictionary: Dict, path: List[str], value: Any):
     ] = value
 
 
-def serialize_viewer_document(document: Dict[str, Any]):
+def serialize_viewer_document(document: dict[str, Any]):
     document.pop("_id", None)
     return document
 

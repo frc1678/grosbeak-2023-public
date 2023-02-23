@@ -2,12 +2,12 @@
 This should be cleaner
 """
 import os
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable
 
 from pydantic import BaseModel
 
 
-def get_envs(envs: Dict[str, Callable[[str], Any]]) -> Dict[str, Optional[str]]:
+def get_envs(envs: dict[str, Callable[[str], Any]]) -> dict[str, str | None]:
     env_dict = dict()
     for env in envs:
         env_value = os.environ.get(env)

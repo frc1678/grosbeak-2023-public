@@ -1,7 +1,7 @@
 """
 https://github.com/tiangolo/fastapi/issues/98#issuecomment-907452636
 """
-from typing import Any, Dict, List, Literal, Optional, Tuple
+from typing import Any, Literal, Tuple
 from uuid import uuid4
 
 from fastapi import WebSocket, WebSocketDisconnect
@@ -14,7 +14,7 @@ from grosbeak.env import env
 
 class ConnectionManager:
     def __init__(self):
-        self.active_connections: Dict[str, WebSocket] = {}
+        self.active_connections: dict[str, WebSocket] = {}
 
     async def connect(self, websocket: WebSocket) -> str:
         await websocket.accept()
@@ -22,27 +22,27 @@ class ConnectionManager:
         self.active_connections[id] = websocket
         return id
 
-    def disconnect(self, websocket: WebSocket) -> Optional[str]:
+    def disconnect(self, websocket: WebSocket) -> str | None:
         for id, connection in self.active_connections.items():
             if connection == websocket:
                 del self.active_connections[id]
                 return id
         return None
 
-    async def message(self, message: Dict, websocket: Optional[WebSocket]):
+    async def message(self, message: dict, websocket: WebSocket | None):
         if websocket is not None:
             await websocket.send_json(message)
 
-    async def broadcast(self, message: Dict):
+    async def broadcast(self, message: dict):
         for connection in self.active_connections.values():
             await connection.send_json(message)
 
-    def get_connection_by_id(self, id: str) -> Optional[WebSocket]:
+    def get_connection_by_id(self, id: str) -> WebSocket | None:
         return self.active_connections.get(id)
 
 
 class PicklistConnectionManager(ConnectionManager):
-    current_editor: Optional[str] = None
+    current_editor: str | None = None
 
     def login(self, password: str, user: str) -> bool:
         if password == env.PICKLIST_PASSWORD:
@@ -59,7 +59,7 @@ class PicklistConnectionManager(ConnectionManager):
     def can_edit(self, user: str) -> bool:
         return self.current_editor == user
 
-    def disconnect(self, websocket: WebSocket) -> Optional[str]:
+    def disconnect(self, websocket: WebSocket) -> str | None:
         id = super().disconnect(websocket)
         if id is not None and self.current_editor == id:
             self.current_editor = None
@@ -84,15 +84,15 @@ class MessageRequest:
 class MessageResponse:
     class PicklistData(BaseModel):
         type: Literal["picklist_data"] = "picklist_data"
-        ranking: List[int]
-        dnp: List[int]
+        ranking: list[int]
+        dnp: list[int]
 
     class Login(BaseModel):
         type: Literal["login"] = "login"
         success: bool
 
 
-def get_max_rank(arr: List[Dict[str, Any]]) -> int:
+def get_max_rank(arr: list[dict[str, Any]]) -> int:
     place_list = set(map(lambda e: e["rank"], arr))
     if len(place_list) == 0:
         return 0
@@ -162,7 +162,7 @@ def toggle_dnp(team_number: int, event_key: str):
         )
 
 
-def get_picklist(event_key: str) -> Tuple[List[int], List[int]]:
+def get_picklist(event_key: str) -> Tuple[list[int], list[int]]:
     db = client[event_key]
     collection = db["picklist"]
     picklist_items = list(collection.find())

@@ -1,6 +1,5 @@
 import uuid
-from typing import Dict, List, Literal
-
+from typing import Literal
 import pymongo
 
 from .env import env
@@ -8,7 +7,7 @@ from .env import env
 DocumentTypes = Literal["team", "tim", "aim"]
 AllianceColors = Literal["red", "blue"]
 
-COLLECTIONS: Dict[str, DocumentTypes] = {
+COLLECTIONS: dict[str, DocumentTypes] = {
     "raw_obj_pit": "team",
     "tba_tim": "tim",
     "obj_tim": "tim",
@@ -21,7 +20,7 @@ COLLECTIONS: Dict[str, DocumentTypes] = {
     "picklist": "team",
 }
 
-COLLECTION_KEYS: Dict[DocumentTypes, List[str]] = {
+COLLECTION_KEYS: dict[DocumentTypes, list[str]] = {
     "team": ["team_number"],
     "tim": ["match_number", "team_number"],
     "aim": ["match_number", "alliance_color_is_red"],

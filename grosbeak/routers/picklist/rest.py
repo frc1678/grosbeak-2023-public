@@ -1,4 +1,3 @@
-from typing import List
 from fastapi import APIRouter, Query, Body
 from grosbeak.db import client
 from loguru import logger
@@ -18,7 +17,7 @@ def get_list(event_key: str = Query(default=env.DB_NAME)):
 
 
 class PicklistData(BaseModel):
-    ranking: List[str]
+    ranking: list[str]
     dnp: list
 
 

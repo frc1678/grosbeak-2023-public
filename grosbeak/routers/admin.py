@@ -48,7 +48,9 @@ class NewStaticRequest(BaseModel):
 
 
 @router.put("/static")
-def new_match_schedule(data: NewStaticRequest, user_level: int = Depends(get_auth_level)):
+def new_match_schedule(
+    data: NewStaticRequest, user_level: int = Depends(get_auth_level)
+):
     if user_level < 2:
         return JSONResponse(
             content={"error": f"Unauthorized level {user_level} user"},
@@ -60,9 +62,11 @@ def new_match_schedule(data: NewStaticRequest, user_level: int = Depends(get_aut
     )
     return {"error": None}
 
+
 class SheetData(BaseModel):
     event_key: str
     sheet_id: str
+
 
 @router.post("/sheet-id")
 def update_sheet_id(data: SheetData, user_level: int = Depends(get_auth_level)):
@@ -71,5 +75,9 @@ def update_sheet_id(data: SheetData, user_level: int = Depends(get_auth_level)):
             content={"error": f"Unauthorized level {user_level} user"},
             status_code=403,
         )
-    api_db["sheets"].update_one({"event_key": data.event_key}, {"$set": {"sheet_id": data.sheet_id}}, upsert=True)
+    api_db["sheets"].update_one(
+        {"event_key": data.event_key},
+        {"$set": {"sheet_id": data.sheet_id}},
+        upsert=True,
+    )
     return {"error": None}

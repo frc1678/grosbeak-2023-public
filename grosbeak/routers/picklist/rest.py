@@ -8,6 +8,7 @@ from fastapi.responses import JSONResponse
 from grosbeak.routers.api import ErrorMessage
 from pymongo.results import DeleteResult
 from typing import Any
+
 router = APIRouter(prefix="/rest")
 
 
@@ -25,6 +26,7 @@ class PicklistData(BaseModel):
 class UpdateListResponse(BaseModel):
     deleted: int
 
+
 def set_picklist(event_key: str, ranking: list[str], dnp: list[str]) -> DeleteResult:
     picklist = client[event_key]["picklist"]
     for i, team in enumerate(ranking):
@@ -35,10 +37,9 @@ def set_picklist(event_key: str, ranking: list[str], dnp: list[str]) -> DeleteRe
         picklist.update_one(
             {"team_number": team}, {"$set": {"rank": -1, "dnp": True}}, upsert=True
         )
-    delete_resp = picklist.delete_many(
-        {"team_number": {"$nin": ranking + dnp}}
-    )
+    delete_resp = picklist.delete_many({"team_number": {"$nin": ranking + dnp}})
     return delete_resp
+
 
 @router.put(
     "/list",
@@ -62,9 +63,12 @@ async def update_list(
         "deleted": delete_resp.deleted_count,
     }
 
+
 @router.put("/sheet")
 def update_from_sheet(request: Request, data: PicklistData = Body(default=...)):
-    sheet_id = request.headers["Authorization"] if "Authorization" in  request.headers else None
+    sheet_id = (
+        request.headers["Authorization"] if "Authorization" in request.headers else None
+    )
     if sheet_id is None:
         return {"error": "Somehow there is no sheet id in the headers"}
     sheet_doc: dict[str, Any] | None = api_db["sheets"].find_one({"sheet_id": sheet_id})

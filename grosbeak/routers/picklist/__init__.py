@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Security, WebSocket
-from grosbeak.auth import get_api_key, protect_websocket
+from grosbeak.auth import get_auth_level, protect_websocket
 from grosbeak.env import env
 from grosbeak.routers.picklist.live import websocket_picklist as ws_picklist
 import grosbeak.routers.picklist.rest as rest
 
-router = APIRouter(prefix="/picklist", dependencies=[Security(get_api_key)])
+router = APIRouter(prefix="/picklist", dependencies=[Security(get_auth_level)])
 
 
 @router.websocket("/live")

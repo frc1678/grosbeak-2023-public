@@ -2,12 +2,12 @@ from fastapi import APIRouter, Security
 from pydantic import BaseModel, Field
 from pydantic.types import constr
 
-from grosbeak.auth import get_api_key
+from grosbeak.auth import get_auth_level
 from grosbeak.db import client
 from grosbeak.env import env
 from grosbeak.util import serialize_documents
 
-router = APIRouter(prefix="/notes", dependencies=[Security(get_api_key)])
+router = APIRouter(prefix="/notes", dependencies=[Security(get_auth_level)])
 
 
 @router.get("/all")

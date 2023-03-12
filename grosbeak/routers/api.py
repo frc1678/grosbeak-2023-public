@@ -5,7 +5,7 @@ from typing import Any, TypedDict
 from fastapi import APIRouter, Security
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from ..auth import get_api_key
+from ..auth import get_auth_level
 from ..db import (
     COLLECTION_KEYS,
     STATIC_FILE_TYPES,
@@ -20,7 +20,7 @@ import json
 from os.path import exists
 from grosbeak.routers.notes import router as notes_router
 
-router = APIRouter(prefix="/api", dependencies=[Security(get_api_key)])
+router = APIRouter(prefix="/api", dependencies=[Security(get_auth_level)])
 
 router.include_router(notes_router)
 

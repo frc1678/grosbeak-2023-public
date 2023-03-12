@@ -16,7 +16,7 @@ def check_auth(api_key: str) -> int | None:
     sheet_item = api_db["sheets"].find_one({"sheet_id": api_key})
     if sheet_item != None:
         return 1
-    logger.warning("Invalid API key {}" % api_key)
+    logger.warning(f"Invalid API key {api_key}")
     return None
 
 

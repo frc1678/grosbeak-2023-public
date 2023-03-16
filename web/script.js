@@ -1,3 +1,10 @@
+/*
+This script file contains the main logic for the Grosbeak web application.
+ 
+It defines functions for reading and validating user input, 
+uploading files to the server, and handling button clicks and file changes.
+*/
+
 window.Ajv = window.ajv2020
 
 function readAsText(inputElement) {
@@ -80,6 +87,7 @@ async function main() {
             alert("Invalid match schedule")
         }
     })
+    // Upload match schedule on match schedule submit
     matchScheduleSubmitButton.addEventListener("click", async () => {
         uploadFile("match-schedule")
     })
@@ -95,14 +103,17 @@ async function main() {
             alert("Invalid team list")
         }
     })
+    // Upload team list on team list submit
     teamListSubmitButton.addEventListener("click", async () => {
         uploadFile("team-list")
     })
     const picklistSheetIdInput = document.getElementById("picklist")
     const picklistSheetSubmitButton = document.getElementById("submit-picklist")
+    // Whenever the sheet id input is changed, verify the sheet id is not blank and update the button accordingly
     picklistSheetIdInput.addEventListener("input", (ele, ev) => {
         picklistSheetSubmitButton.disabled = ele.data === null
     })
+    // Send event key and sheet id on picklist submit
     picklistSheetSubmitButton.addEventListener("click", async () => {
         const sheetId = picklistSheetIdInput.value
         const params = getParams()
@@ -110,12 +121,13 @@ async function main() {
             return
         }
         const {eventKey, apiKey} = params
-        try {
-            fetch("/admin/sheet-id", {method: "POST", headers: {
-                "Content-Type": "application/json", "Authorization": apiKey
-            }, body: JSON.stringify({event_key: eventKey, sheet_id: sheetId})})
-        } catch (error) {
-            
+        const response = fetch("/admin/sheet-id", {method: "POST", headers: {
+            "Content-Type": "application/json", "Authorization": apiKey
+        }, body: JSON.stringify({event_key: eventKey, sheet_id: sheetId})})
+        if (response.ok) {
+            alert(`Set sheet id for ${eventKey} successfully`)
+        } else {
+            alert(`Error setting sheet id: ${await response.text()}`)
         }
     })
 }

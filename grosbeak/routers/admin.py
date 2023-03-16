@@ -70,6 +70,10 @@ class SheetData(BaseModel):
 
 @router.post("/sheet-id")
 def update_sheet_id(data: SheetData, user_level: int = Depends(get_auth_level)):
+    """
+    Updates the assigned Google Sheet ID for a event key
+    This allows using a sheet id as authentication with automatic infer of event_key
+    """
     if user_level < 2:
         return JSONResponse(
             content={"error": f"Unauthorized level {user_level} user"},

@@ -28,6 +28,10 @@ class UpdateListResponse(BaseModel):
 
 
 def set_picklist(event_key: str, ranking: list[str], dnp: list[str]) -> DeleteResult:
+    """
+    Updates the picklist for the specified event key with the provided teams (order matters)
+    Returns the result of the pymongo query that deletes stale teams
+    """
     picklist = client[event_key]["picklist"]
     for i, team in enumerate(ranking):
         picklist.update_one(
@@ -37,6 +41,7 @@ def set_picklist(event_key: str, ranking: list[str], dnp: list[str]) -> DeleteRe
         picklist.update_one(
             {"team_number": team}, {"$set": {"rank": -1, "dnp": True}}, upsert=True
         )
+    # Remove any stale teams
     delete_resp = picklist.delete_many({"team_number": {"$nin": ranking + dnp}})
     return delete_resp
 
@@ -50,6 +55,9 @@ async def update_list(
     event_key: str = Query(default=env.DB_NAME),
     data: PicklistData = Body(default=...),
 ):
+    """
+    Update picklist using password
+    """
     if password != env.PICKLIST_PASSWORD:
         logger.warning("Incorrect password for picklist update")
         return JSONResponse(status_code=401, content={"error": "Incorrect password"})
@@ -66,6 +74,9 @@ async def update_list(
 
 @router.put("/sheet")
 def update_from_sheet(request: Request, data: PicklistData = Body(default=...)):
+    """
+    Update picklist using sheet id in Authorization header
+    """
     sheet_id = (
         request.headers["Authorization"] if "Authorization" in request.headers else None
     )

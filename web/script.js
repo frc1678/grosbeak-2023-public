@@ -1,3 +1,10 @@
+/*
+This script file contains the main logic for the Grosbeak web application.
+ 
+It defines functions for reading and validating user input, 
+uploading files to the server, and handling button clicks and file changes.
+*/
+
 window.Ajv = window.ajv2020
 
 function readAsText(inputElement) {
@@ -24,19 +31,25 @@ async function main() {
     const eventKeyInput = document.getElementById("eventkey")
 
     function getParams() {
-        return {apikey: apiKeyInput.value, eventkey: eventKeyInput.value}
+        const apiKey = apiKeyInput.value
+        const eventKey = eventKeyInput.value
+        if (!eventKey) {
+            alert("No event key")
+            return null
+        }
+        if (!apiKey) {
+            alert("No api key")
+            return null
+        }
+        return {apiKey, eventKey}
     }
 
     async function uploadFile(type) {
-        const {eventkey, apikey} = getParams()
-        if (!eventkey) {
-            alert("No event key")
+        const params = getParams()
+        if (params === null) {
             return
         }
-        if (!apikey) {
-            alert("No api key")
-            return
-        }
+        const {eventKey, apiKey} = params
         let input
         switch (type) {
             case "match-schedule":
@@ -52,8 +65,8 @@ async function main() {
         const data = JSON.parse(fileText)
         const response = await fetch("/admin/static", {
             method: "PUT", headers: {
-                "Content-Type": "application/json", "Authorization": apikey
-            }, body: JSON.stringify({type, event_key: eventkey, data})
+                "Content-Type": "application/json", "Authorization": apiKey
+            }, body: JSON.stringify({type, event_key: eventKey, data})
         })
         if (response.ok) {
             alert(`${type} uploaded successfully`)
@@ -74,6 +87,10 @@ async function main() {
             alert("Invalid match schedule")
         }
     })
+    // Upload match schedule on match schedule submit
+    matchScheduleSubmitButton.addEventListener("click", async () => {
+        uploadFile("match-schedule")
+    })
     const teamListSubmitButton = document.getElementById("submit-teamlist")
     const teamListFileInput = document.getElementById("teamlist")
     teamListFileInput.addEventListener("change", async (v) => {
@@ -86,13 +103,33 @@ async function main() {
             alert("Invalid team list")
         }
     })
-    matchScheduleSubmitButton.addEventListener("click", async () => {
-        uploadFile("match-schedule")
-    })
+    // Upload team list on team list submit
     teamListSubmitButton.addEventListener("click", async () => {
         uploadFile("team-list")
     })
-
+    const picklistSheetIdInput = document.getElementById("picklist")
+    const picklistSheetSubmitButton = document.getElementById("submit-picklist")
+    // Whenever the sheet id input is changed, verify the sheet id is not blank and update the button accordingly
+    picklistSheetIdInput.addEventListener("input", (ele, ev) => {
+        picklistSheetSubmitButton.disabled = ele.data === null
+    })
+    // Send event key and sheet id on picklist submit
+    picklistSheetSubmitButton.addEventListener("click", async () => {
+        const sheetId = picklistSheetIdInput.value
+        const params = getParams()
+        if (params === null) {
+            return
+        }
+        const {eventKey, apiKey} = params
+        const response = fetch("/admin/sheet-id", {method: "POST", headers: {
+            "Content-Type": "application/json", "Authorization": apiKey
+        }, body: JSON.stringify({event_key: eventKey, sheet_id: sheetId})})
+        if (response.ok) {
+            alert(`Set sheet id for ${eventKey} successfully`)
+        } else {
+            alert(`Error setting sheet id: ${await response.text()}`)
+        }
+    })
 }
 
 main()

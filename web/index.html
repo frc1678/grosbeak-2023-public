@@ -1,3 +1,8 @@
+<!--
+This is the main HTML file for the Grosbeak web application. 
+It contains the structure and layout of the user interface, 
+as well as references to external resources such as scripts and stylesheets.
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,6 +32,13 @@
         <input type="file" id="teamlist" accept=".json" />
         <br>
         <button id="submit-teamlist" disabled>Submit</button>
+    </details>
+    <details>
+        <summary>Picklist Sheet</summary>
+        <label for="picklist">Picklist Sheet ID</label>
+        <input type="text" id="picklist" />
+        <br>
+        <button id="submit-picklist" disabled>Submit</button>
     </details>
 </body>
 </html>

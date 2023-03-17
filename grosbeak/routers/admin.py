@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, validator, Field
 from pydantic.types import constr
 
-from ..auth import get_api_key
+from ..auth import get_auth_level
 from ..db import STATIC_FILE_TYPES, api_db, client
 
 router = APIRouter(prefix="/admin")
@@ -24,9 +24,9 @@ class NewCredentialResponse(BaseModel):
 
 @router.post("/new-credential", response_model=NewCredentialResponse)
 async def create_credential(
-    *, data: NewCredentialRequest, user_level: dict = Depends(get_api_key)
+    *, data: NewCredentialRequest, user_level: int = Depends(get_auth_level)
 ):
-    if user_level["level"] >= 2:
+    if user_level >= 2:
         creds = NewCredentialResponse(
             description=data.description,
             level=data.level,
@@ -48,14 +48,40 @@ class NewStaticRequest(BaseModel):
 
 
 @router.put("/static")
-def new_match_schedule(data: NewStaticRequest, user_level: dict = Depends(get_api_key)):
-    if user_level["level"] < 2:
+def new_match_schedule(
+    data: NewStaticRequest, user_level: int = Depends(get_auth_level)
+):
+    if user_level < 2:
         return JSONResponse(
-            content={"error": f"Unauthorized level {user_level['level']} user"},
+            content={"error": f"Unauthorized level {user_level} user"},
             status_code=403,
         )
     collection = client["static"][data.type]
     collection.find_one_and_update(
         {"event_key": data.event_key}, {"$set": {"data": data.data}}, upsert=True
+    )
+    return {"error": None}
+
+
+class SheetData(BaseModel):
+    event_key: str
+    sheet_id: str
+
+
+@router.post("/sheet-id")
+def update_sheet_id(data: SheetData, user_level: int = Depends(get_auth_level)):
+    """
+    Updates the assigned Google Sheet ID for an event key
+    This allows using a sheet id as authentication with automatic infer of event_key
+    """
+    if user_level < 2:
+        return JSONResponse(
+            content={"error": f"Unauthorized level {user_level} user"},
+            status_code=403,
+        )
+    api_db["sheets"].update_one(
+        {"event_key": data.event_key},
+        {"$set": {"sheet_id": data.sheet_id}},
+        upsert=True,
     )
     return {"error": None}

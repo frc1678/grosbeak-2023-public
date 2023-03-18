@@ -4,7 +4,7 @@ import pymongo
 
 from .env import env
 
-DocumentTypes = Literal["team", "tim", "aim"]
+DocumentTypes = Literal["team", "tim", "aim", "alliance"]
 AllianceColors = Literal["red", "blue"]
 
 COLLECTIONS: dict[str, DocumentTypes] = {
@@ -18,12 +18,14 @@ COLLECTIONS: dict[str, DocumentTypes] = {
     "tba_team": "team",
     "pickability": "team",
     "picklist": "team",
+    "predicted_alliances": "alliance",
 }
 
 COLLECTION_KEYS: dict[DocumentTypes, list[str]] = {
     "team": ["team_number"],
     "tim": ["match_number", "team_number"],
     "aim": ["match_number", "alliance_color_is_red"],
+    "alliance": ["alliance_num"],
 }
 
 STATIC_FILE_TYPES = {"match-schedule", "team-list"}

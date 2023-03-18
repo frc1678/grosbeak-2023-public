@@ -1,7 +1,7 @@
 from enum import Enum
 from functools import reduce
 import os
-from typing import Any, TypedDict
+from typing import Any, TypedDict, cast
 from fastapi import APIRouter, Security
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
@@ -134,7 +134,7 @@ def get_viewer_data(
     This data is much easier for viewer to understand
     """
     db = client[event_key]
-    data: ViewerData = {collection_type: {} for collection_type in COLLECTION_KEYS}
+    data: ViewerData = cast(ViewerData, {collection_type: {} for collection_type in COLLECTION_KEYS})
 
     for collection, collection_type in COLLECTIONS.items():
         documents = db[collection].find()

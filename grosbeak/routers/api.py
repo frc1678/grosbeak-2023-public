@@ -84,11 +84,12 @@ class ViewerData(TypedDict):
     team: dict[str, dict[str, Any]]
     tim: dict[str, dict[str, dict[str, Any]]]
     aim: dict[str, dict[AllianceColors, dict[str, Any]]]
+    alliance: dict[str, dict[str, Any]]
 
 
 def make_key(collection_type: DocumentTypes, document: dict[str, Any]) -> list[str]:
     """
-    Makes a key from a team, tim, or aim document for referencing
+    Makes a key from a team, tim, aim, or alliance document for referencing
     """
     keys = []
     for header in COLLECTION_KEYS[collection_type]:
@@ -133,7 +134,7 @@ def get_viewer_data(
     This data is much easier for viewer to understand
     """
     db = client[event_key]
-    data: ViewerData = {"team": {}, "tim": {}, "aim": {}}
+    data: ViewerData = {collection_type: {} for collection_type in COLLECTION_KEYS}
 
     for collection, collection_type in COLLECTIONS.items():
         documents = db[collection].find()

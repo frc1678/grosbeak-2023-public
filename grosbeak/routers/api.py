@@ -134,7 +134,9 @@ def get_viewer_data(
     This data is much easier for viewer to understand
     """
     db = client[event_key]
-    data: ViewerData = cast(ViewerData, {collection_type: {} for collection_type in COLLECTION_KEYS})
+    data: ViewerData = cast(
+        ViewerData, {collection_type: {} for collection_type in COLLECTION_KEYS}
+    )
 
     for collection, collection_type in COLLECTIONS.items():
         documents = db[collection].find()

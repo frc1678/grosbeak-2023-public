@@ -14,7 +14,7 @@ def get_envs(envs: dict[str, Callable[[str], Any]]) -> dict[str, str | None]:
         if env_value is not None:
             try:
                 env_dict[env] = envs[env](env_value)
-            except:
+            except ValueError:
                 print("failed type cast")
                 env_dict[env] = None
         else:

@@ -15,11 +15,11 @@ def check_auth(api_key: str) -> int | None:
     """
     # Check for standard auth key
     creds_item = cast(dict[str, Any], creds_collection.find_one({"api_key": api_key}))
-    if creds_item != None:
+    if creds_item is not None:
         return creds_item["level"]
     # Check for registered sheet id
     sheet_item = api_db["sheets"].find_one({"sheet_id": api_key})
-    if sheet_item != None:
+    if sheet_item is not None:
         # Valid sheet id is worth an auth level of 1
         return 1
     logger.warning(f"Invalid API key {api_key}")

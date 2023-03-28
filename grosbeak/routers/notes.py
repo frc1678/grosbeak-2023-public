@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Security
 from pydantic import BaseModel, Field
-from pydantic.types import constr
 
 from grosbeak.auth import get_auth_level
 from grosbeak.db import client

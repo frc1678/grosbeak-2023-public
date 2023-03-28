@@ -17,6 +17,7 @@ uvicorn = { version = "~0.17", extras = ["standard"] }
 black = "~22.3"
 mypy = "~0.942"
 pytest = "~7.1"
+ruff = "^0.0.257"
 
 [build-system]
 build-backend = "poetry.core.masonry.api"
@@ -31,6 +32,8 @@ vcs = "git"
 [tool.black]
 src = "grosbeak/"
 include = '\.py$'
+target-version = ["py310"]
+line-length = 88
 
 [tool.mypy]
 files = "./grosbeak/**/*.py"
@@ -39,3 +42,7 @@ explicit_package_bases = true
 
 [tool.mypy-pymongo]
 ignore_missing_imports = true
+
+[tool.ruff]
+line-length = 120
+src = ["grosbeak"]

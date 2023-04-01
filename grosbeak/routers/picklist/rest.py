@@ -7,13 +7,13 @@ from grosbeak.env import env
 from fastapi.responses import JSONResponse
 from grosbeak.routers.api import ErrorMessage
 from pymongo.results import DeleteResult
-from typing import Any
+from typing import Annotated, Any
 
 router = APIRouter(prefix="/rest")
 
 
 @router.get("/list")
-def get_list(event_key: str = Query(default=env.DB_NAME)):
+def get_list(event_key: Annotated[str, Query()] = env.DB_NAME):
     ranking, dnp = get_picklist(event_key)
     return {"ranking": ranking, "dnp": dnp}
 
@@ -51,9 +51,9 @@ def set_picklist(event_key: str, ranking: list[str], dnp: list[str]) -> DeleteRe
     responses={401: {"model": ErrorMessage}, 200: {"model": UpdateListResponse}},
 )
 async def update_list(
-    password: str = Query(default=...),
-    event_key: str = Query(default=env.DB_NAME),
-    data: PicklistData = Body(default=...),
+    data: Annotated[PicklistData, Body()],
+    password: Annotated[str | None, Query()] = None,
+    event_key: Annotated[str, Query()] = env.DB_NAME,
 ):
     """
     Update picklist using password
@@ -73,7 +73,7 @@ async def update_list(
 
 
 @router.put("/sheet")
-def update_from_sheet(request: Request, data: PicklistData = Body(default=...)):
+def update_from_sheet(request: Request, data: Annotated[PicklistData, Body()]):
     """
     Update picklist using sheet id in Authorization header
     """

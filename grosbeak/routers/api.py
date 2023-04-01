@@ -128,11 +128,15 @@ def serialize_viewer_document(document: dict[str, Any]):
 
 @router.get("/viewer")
 def get_viewer_data(
-    use_strings: Annotated[bool | None, Query()] = False,
-    event_key: Annotated[str | None, Query()] = env.DB_NAME,
+    use_strings: Annotated[bool, Query()] = False,
+    event_key: Annotated[str, Query()] = env.DB_NAME,
     ignored_collections: Annotated[list[str] | None, Query()] = None,
-    ignored_to_string_datapoints: Annotated[list[str] | None, Query(alias="itsd")] = None,
-    ignored_to_string_collections: Annotated[list[str] | None, Query(alias="itsc")] = None,
+    ignored_to_string_datapoints: Annotated[
+        list[str] | None, Query(alias="itsd")
+    ] = None,
+    ignored_to_string_collections: Annotated[
+        list[str] | None, Query(alias="itsc")
+    ] = None,
 ) -> ViewerData:
     """
     This function uses hard code "collections of collections" to try to relate different collections.

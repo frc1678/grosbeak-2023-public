@@ -51,9 +51,9 @@ def set_picklist(event_key: str, ranking: list[str], dnp: list[str]) -> DeleteRe
     responses={401: {"model": ErrorMessage}, 200: {"model": UpdateListResponse}},
 )
 async def update_list(
+    data: Annotated[PicklistData, Body()],
     password: Annotated[str | None, Query()] = None,
     event_key: Annotated[str, Query()] = env.DB_NAME,
-    data: Annotated[PicklistData | None, Body()] = None,
 ):
     """
     Update picklist using password
@@ -73,7 +73,7 @@ async def update_list(
 
 
 @router.put("/sheet")
-def update_from_sheet(request: Request, data: Annotated[PicklistData | None, Body()] = None):
+def update_from_sheet(request: Request, data: Annotated[PicklistData, Body()]):
     """
     Update picklist using sheet id in Authorization header
     """

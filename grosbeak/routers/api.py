@@ -142,7 +142,6 @@ def get_viewer_data(
     This function uses hard code "collections of collections" to try to relate different collections.
     This data is much easier for viewer to understand
     """
-    print(ignored_to_string_collections)
     db = client[event_key]
     data: ViewerData = cast(
         ViewerData, {collection_type: {} for collection_type in COLLECTION_KEYS}

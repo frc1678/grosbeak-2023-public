@@ -1,8 +1,8 @@
 from enum import Enum
 from functools import reduce
 import os
-from typing import Any, TypedDict, cast
-from fastapi import APIRouter, Security
+from typing import Annotated, Any, TypedDict, cast
+from fastapi import APIRouter, Query, Security
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from ..auth import get_auth_level
@@ -85,6 +85,7 @@ class ViewerData(TypedDict):
     tim: dict[str, dict[str, dict[str, Any]]]
     aim: dict[str, dict[AllianceColors, dict[str, Any]]]
     alliance: dict[str, dict[str, Any]]
+    auto_paths: dict[str, dict[str, dict[str, dict[str, Any]]]]
 
 
 def make_key(collection_type: DocumentTypes, document: dict[str, Any]) -> list[str]:
@@ -127,18 +128,25 @@ def serialize_viewer_document(document: dict[str, Any]):
 
 @router.get("/viewer")
 def get_viewer_data(
-    use_strings: bool = False, event_key: str = env.DB_NAME
+    use_strings: Annotated[bool | None, Query()] = False,
+    event_key: Annotated[str | None, Query()] = env.DB_NAME,
+    ignored_collections: Annotated[list[str] | None, Query()] = None,
+    ignored_to_string_datapoints: Annotated[list[str] | None, Query(alias="itsd")] = None,
+    ignored_to_string_collections: Annotated[list[str] | None, Query(alias="itsc")] = None,
 ) -> ViewerData:
     """
     This function uses hard code "collections of collections" to try to relate different collections.
     This data is much easier for viewer to understand
     """
+    print(ignored_to_string_collections)
     db = client[event_key]
     data: ViewerData = cast(
         ViewerData, {collection_type: {} for collection_type in COLLECTION_KEYS}
     )
 
     for collection, collection_type in COLLECTIONS.items():
+        if ignored_collections is not None and collection in ignored_collections:
+            continue
         documents = db[collection].find()
         for doc in documents:
             key = make_key(collection_type, doc)
@@ -150,10 +158,18 @@ def get_viewer_data(
             # Sending _id to viewer is generally not a good idea and is just wasting space
             # https://stackoverflow.com/a/62706325
             sanitized = serialize_viewer_document(doc)
-            if use_strings:
+            if use_strings and (
+                ignored_to_string_collections is None
+                or collection not in ignored_to_string_collections
+            ):
                 for k, v in sanitized.items():
+                    if (
+                        ignored_to_string_datapoints is not None
+                        and k in ignored_to_string_datapoints
+                    ):
+                        continue
                     # Only convert non primitives (like lists, dicts, or other classes) to strings
-                    if not isinstance(v, (float, int, str, bool)):
+                    if not isinstance(v, (float, int, str, bool, type(None))):
                         sanitized[k] = str(v)
             common_doc.update(sanitized)
     return data

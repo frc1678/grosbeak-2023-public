@@ -5,8 +5,7 @@ name = "grosbeak"
 version = "0"
 
 [tool.poetry.dependencies]
-# Temporary until https://github.com/tiangolo/fastapi/pull/9315 is merged
-fastapi = {git="https://github.com/sharonyogev/fastapi", branch="fix/deepcoy_fieldinfo_of_annotated_args"}
+fastapi = "~0.95"
 loguru = "~0.6"
 pydantic = "~1.10"
 pymongo = { git = "https://github.com/mongodb/mongo-python-driver.git", tag = "4.2.0", extras = ["srv"] }

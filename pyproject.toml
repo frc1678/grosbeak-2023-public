@@ -45,5 +45,5 @@ explicit_package_bases = true
 ignore_missing_imports = true
 
 [tool.ruff]
-line-length = 120
 src = ["grosbeak"]
+ignore = ["E501"]

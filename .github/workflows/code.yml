@@ -11,6 +11,7 @@ jobs:
         with:
           version: "~= 22.3"
           src: "./grosbeak"
+      - uses: chartboost/ruff-action@v1
   type-check:
     runs-on: ubuntu-latest
     steps:

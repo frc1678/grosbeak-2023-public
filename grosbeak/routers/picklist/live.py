@@ -115,7 +115,7 @@ def update_picklist(to_place: int, from_place: int, event_key: str):
 
     collection.update_one(
         {"team_number": team_number},
-        {"$set": {f"rank": to_place}},
+        {"$set": {"rank": to_place}},
     )
 
     if to_place > from_place:
@@ -123,14 +123,14 @@ def update_picklist(to_place: int, from_place: int, event_key: str):
             logger.info(f"Moving up team (decrementing): {current_picklist[i]}")
             collection.update_one(
                 {"team_number": current_picklist[i]},
-                {"$inc": {f"rank": -1}},
+                {"$inc": {"rank": -1}},
             )
     else:
         for i in range(to_place - 1, from_place - 1):
             logger.info(f"Moving down team (incrementing): {current_picklist[i]}")
             collection.update_one(
                 {"team_number": current_picklist[i]},
-                {"$inc": {f"rank": 1}},
+                {"$inc": {"rank": 1}},
             )
 
 
@@ -181,7 +181,7 @@ def get_picklist(event_key: str) -> Tuple[list[int], list[int]]:
     logger.info(f"Team numbers: {team_numbers}")
     return (
         team_numbers,
-        [e["team_number"] for e in picklist_items if e["dnp"] == True],
+        [e["team_number"] for e in picklist_items if e["dnp"] is True],
     )
 
 

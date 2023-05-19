@@ -3,7 +3,6 @@ import uuid
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, validator, Field
-from pydantic.types import constr
 
 from ..auth import get_auth_level
 from ..db import STATIC_FILE_TYPES, api_db, client

@@ -1,6 +1,5 @@
 from enum import Enum
 from functools import reduce
-import os
 from typing import Annotated, Any, TypedDict, cast
 from fastapi import APIRouter, Query, Security
 from fastapi.responses import JSONResponse
@@ -15,9 +14,7 @@ from ..db import (
     DocumentTypes,
 )
 from ..env import env
-from ..util import all_files_in_dir, serialize_documents, strip_extension
-import json
-from os.path import exists
+from ..util import serialize_documents
 from grosbeak.routers.notes import router as notes_router
 
 router = APIRouter(prefix="/api", dependencies=[Security(get_auth_level)])

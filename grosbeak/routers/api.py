@@ -26,13 +26,14 @@ class ErrorMessage(BaseModel):
     """
     This model represents an error from the API.
     """
+
     error: str
 
 
 @router.get("/collection/{collection_name}", responses={404: {"model": ErrorMessage}})
 def read_collection(collection_name: str, event_key: str = env.DB_NAME):
     """
-    This endpoint gets all documents from a collection in the database for a given event 
+    This endpoint gets all documents from a collection in the database for a given event
     and returns them in list of objects.
     """
     db = client[event_key]
@@ -52,6 +53,7 @@ class ColorEnum(str, Enum):
     """
     This enum represents the color of an alliance.
     """
+
     red = "red"
     blue = "blue"
 
@@ -60,6 +62,7 @@ class MatchScheduleTeam(BaseModel):
     """
     This model represents a team in a match schedule.
     """
+
     number: str
     color: ColorEnum
 
@@ -68,6 +71,7 @@ class MatchScheduleMatch(BaseModel):
     """
     This model represents a match in a match schedule.
     """
+
     teams: list[MatchScheduleTeam]
 
 
@@ -164,7 +168,7 @@ def get_viewer_data(
     """
     This function uses hard code "collections of collections" to try to relate different collections.
     This data is much easier for viewer to understand.
-    
+
     """
     db = client[event_key]
     data: ViewerData = cast(
@@ -192,9 +196,8 @@ def get_viewer_data(
             ):
                 # Loop through all the datapoints in the document
                 for k, v in sanitized.items():
-                    if (
-                        (ignored_to_string_datapoints is not None)
-                        and (k in ignored_to_string_datapoints)
+                    if (ignored_to_string_datapoints is not None) and (
+                        k in ignored_to_string_datapoints
                     ):
                         continue
                     # Only convert non primitives (like lists, dicts, or other classes) to strings

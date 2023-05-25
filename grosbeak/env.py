@@ -7,7 +7,6 @@ from typing import Any, Callable
 from pydantic import BaseModel
 
 
-
 def get_envs(envs: dict[str, Callable[[str], Any]]) -> dict[str, str | None]:
     """
     Get environment variables and cast them to the correct type.
@@ -31,6 +30,7 @@ class Envs(BaseModel):
     """
     Model that represents the environment variables needed
     """
+
     PICKLIST_PASSWORD: str
     DB_NAME: str
     MONGO_URI: str

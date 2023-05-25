@@ -9,7 +9,6 @@ from grosbeak.util import serialize_documents
 router = APIRouter(prefix="/notes", dependencies=[Security(get_auth_level)])
 
 
-
 @router.get("/all")
 def all_notes(event_key: str = env.DB_NAME):
     """
@@ -38,6 +37,7 @@ class PutTeamNotes(BaseModel):
     """
     This model represents the data that is sent to the PUT /notes/team endpoint.
     """
+
     team_number: str = Field(..., min_length=1)
     notes: str
 

@@ -26,6 +26,7 @@ class PicklistData(BaseModel):
     """
     This model represents the data sent to the set_picklist endpoint.
     """
+
     ranking: list[str]
     dnp: list[str]
 
@@ -34,6 +35,7 @@ class UpdateListResponse(BaseModel):
     """
     This model represents the response from the set_picklist endpoint.
     """
+
     deleted: int
 
 

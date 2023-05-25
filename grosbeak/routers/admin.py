@@ -14,6 +14,7 @@ class NewCredentialRequest(BaseModel):
     """
     This model represents a request to create a new credential.
     """
+
     description: str
     level: int
 
@@ -22,6 +23,7 @@ class NewCredentialResponse(BaseModel):
     """
     This model represents a response to a request to create a new credential.
     """
+
     description: str
     level: int
     api_key: str
@@ -48,6 +50,7 @@ class NewStaticRequest(BaseModel):
     """
     This model represents a request to create/update a static file.
     """
+
     type: str
     event_key: str = Field(..., min_length=5)
     data: Union[dict, list]
@@ -81,6 +84,7 @@ class SheetData(BaseModel):
     """
     This model represents a request to update the assigned Google Sheet ID for an event key.
     """
+
     event_key: str
     sheet_id: str
 

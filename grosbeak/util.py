@@ -10,6 +10,7 @@ def all_files_in_dir(dir: str) -> list[str]:
     """
     return [f for f in listdir(dir) if isfile(join(dir, f))]
 
+
 def strip_extension(filename: str) -> str:
     """
     This function strips the extension from a filename.
@@ -21,7 +22,7 @@ def strip_extension(filename: str) -> str:
 
 def serialize_documents(docs: list[dict]) -> list[dict]:
     """
-    Remove the '_id' from each document and 
+    Remove the '_id' from each document and
     returns the documents in the same order
     """
     docs = list(docs)

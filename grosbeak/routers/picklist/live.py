@@ -16,6 +16,7 @@ class ConnectionManager:
     """
     Manages connections to a websocket.
     """
+
     def __init__(self):
         self.active_connections: dict[str, WebSocket] = {}
 
@@ -48,6 +49,7 @@ class PicklistConnectionManager(ConnectionManager):
     """
     Manages connections to the picklist websocket.
     """
+
     current_editor: str | None = None
 
     def login(self, password: str, user: str) -> bool:
@@ -76,10 +78,12 @@ class MessageRequest:
     """
     An enum of all possible request message types.
     """
+
     class PicklistUpdate(BaseModel):
         """
         This model represents a request to update the picklist.
         """
+
         type: Literal["picklist_update"]
         to_place: int
         from_place: int
@@ -88,6 +92,7 @@ class MessageRequest:
         """
         This model represents a request to toggle a team's DNP status.
         """
+
         type: Literal["dnp_update"]
         team_number: int
 
@@ -95,6 +100,7 @@ class MessageRequest:
         """
         This model represents a request to start editing the picklist.
         """
+
         type: Literal["start_edit"]
         password: str
 
@@ -103,10 +109,12 @@ class MessageResponse:
     """
     An enum of all possible response message types.
     """
+
     class PicklistData(BaseModel):
         """
         This model represents a response containing the picklist data.
         """
+
         type: Literal["picklist_data"] = "picklist_data"
         ranking: list[int]
         dnp: list[int]
@@ -115,6 +123,7 @@ class MessageResponse:
         """
         This model represents a response to a login request.
         """
+
         type: Literal["login"] = "login"
         success: bool
 

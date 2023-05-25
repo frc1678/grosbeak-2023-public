@@ -11,11 +11,17 @@ router = APIRouter(prefix="/admin")
 
 
 class NewCredentialRequest(BaseModel):
+    """
+    This model represents a request to create a new credential.
+    """
     description: str
     level: int
 
 
 class NewCredentialResponse(BaseModel):
+    """
+    This model represents a response to a request to create a new credential.
+    """
     description: str
     level: int
     api_key: str
@@ -25,6 +31,9 @@ class NewCredentialResponse(BaseModel):
 async def create_credential(
     *, data: NewCredentialRequest, user_level: int = Depends(get_auth_level)
 ):
+    """
+    This endpoint creates a new credential with the given description and level.
+    """
     if user_level >= 2:
         creds = NewCredentialResponse(
             description=data.description,
@@ -36,6 +45,9 @@ async def create_credential(
 
 
 class NewStaticRequest(BaseModel):
+    """
+    This model represents a request to create/update a static file.
+    """
     type: str
     event_key: str = Field(..., min_length=5)
     data: Union[dict, list]
@@ -50,6 +62,9 @@ class NewStaticRequest(BaseModel):
 def new_match_schedule(
     data: NewStaticRequest, user_level: int = Depends(get_auth_level)
 ):
+    """
+    This endpoint creates/updates a new static file with the given type and event key.
+    """
     if user_level < 2:
         return JSONResponse(
             content={"error": f"Unauthorized level {user_level} user"},
@@ -63,6 +78,9 @@ def new_match_schedule(
 
 
 class SheetData(BaseModel):
+    """
+    This model represents a request to update the assigned Google Sheet ID for an event key.
+    """
     event_key: str
     sheet_id: str
 

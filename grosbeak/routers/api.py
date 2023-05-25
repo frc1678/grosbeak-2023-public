@@ -23,11 +23,18 @@ router.include_router(notes_router)
 
 
 class ErrorMessage(BaseModel):
+    """
+    This model represents an error from the API.
+    """
     error: str
 
 
 @router.get("/collection/{collection_name}", responses={404: {"model": ErrorMessage}})
 def read_collection(collection_name: str, event_key: str = env.DB_NAME):
+    """
+    This endpoint gets all documents from a collection in the database for a given event 
+    and returns them in list of objects.
+    """
     db = client[event_key]
     if (
         collection_name in COLLECTIONS.keys()
@@ -42,16 +49,25 @@ def read_collection(collection_name: str, event_key: str = env.DB_NAME):
 
 
 class ColorEnum(str, Enum):
+    """
+    This enum represents the color of an alliance.
+    """
     red = "red"
     blue = "blue"
 
 
 class MatchScheduleTeam(BaseModel):
+    """
+    This model represents a team in a match schedule.
+    """
     number: str
     color: ColorEnum
 
 
 class MatchScheduleMatch(BaseModel):
+    """
+    This model represents a match in a match schedule.
+    """
     teams: list[MatchScheduleTeam]
 
 
@@ -61,6 +77,9 @@ class MatchScheduleMatch(BaseModel):
     responses={404: {"model": ErrorMessage}},
 )
 def read_match_schedule(event_key: str):
+    """
+    This endpoint gets the match schedule for a given event and returns it
+    """
     return read_static_json("match-schedule", event_key)
 
 
@@ -70,6 +89,9 @@ def read_match_schedule(event_key: str):
     responses={404: {"model": ErrorMessage}},
 )
 def read_team_list(event_key: str):
+    """
+    This endpoint gets the team list for a given event and returns it
+    """
     return read_static_json("team-list", event_key)
 
 
@@ -104,7 +126,9 @@ def make_key(collection_type: DocumentTypes, document: dict[str, Any]) -> list[s
 
 
 def get_by_path(dictionary: dict, path: list[str]) -> Any:
-    """ """
+    """
+    Gets a value in a nested dictionary by a list of strings
+    """
     return reduce(lambda d, key: d.get(key) if d else None, path, dictionary)  # type: ignore
 
 
@@ -112,13 +136,15 @@ def set_by_path(dictionary: dict, path: list[str], value: Any):
     """
     Sets a value in a nested dictionary by a list of strings
     """
-    #
     reduce(lambda d, key: d.setdefault(key, {}), path[:-1], dictionary)[
         path[-1]
     ] = value
 
 
 def serialize_viewer_document(document: dict[str, Any]):
+    """
+    Removes the _id from a document and returns the document
+    """
     document.pop("_id", None)
     return document
 
@@ -137,7 +163,8 @@ def get_viewer_data(
 ) -> ViewerData:
     """
     This function uses hard code "collections of collections" to try to relate different collections.
-    This data is much easier for viewer to understand
+    This data is much easier for viewer to understand.
+    
     """
     db = client[event_key]
     data: ViewerData = cast(
@@ -150,8 +177,9 @@ def get_viewer_data(
         documents = db[collection].find()
         for doc in documents:
             key = make_key(collection_type, doc)
-            # Dictionary made from
+            # Dictionary for this specific key
             common_doc = get_by_path(data[collection_type], key)
+            # If the dictionary doesn't exist, create it
             if common_doc is None:
                 common_doc = {}
                 set_by_path(data[collection_type], key, common_doc)
@@ -159,23 +187,28 @@ def get_viewer_data(
             # https://stackoverflow.com/a/62706325
             sanitized = serialize_viewer_document(doc)
             if use_strings and (
-                ignored_to_string_collections is None
-                or collection not in ignored_to_string_collections
+                (ignored_to_string_collections is None)
+                or (collection not in ignored_to_string_collections)
             ):
+                # Loop through all the datapoints in the document
                 for k, v in sanitized.items():
                     if (
-                        ignored_to_string_datapoints is not None
-                        and k in ignored_to_string_datapoints
+                        (ignored_to_string_datapoints is not None)
+                        and (k in ignored_to_string_datapoints)
                     ):
                         continue
                     # Only convert non primitives (like lists, dicts, or other classes) to strings
                     if not isinstance(v, (float, int, str, bool, type(None))):
                         sanitized[k] = str(v)
+            # Add the document to the dictionary
             common_doc.update(sanitized)
     return data
 
 
 def read_static_json(static_type: str, event_key: str):
+    """
+    This function reads a static file from the database and returns it
+    """
     if static_type not in STATIC_FILE_TYPES:
         return JSONResponse(
             content={"error": "Static file type not found/allowed"},

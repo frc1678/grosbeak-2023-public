@@ -14,16 +14,26 @@ router = APIRouter(prefix="/rest")
 
 @router.get("/list")
 def get_list(event_key: Annotated[str, Query()] = env.DB_NAME):
+    """
+    This endpoint gets the picklist for the specified event key and returns it in a list of
+    objects.
+    """
     ranking, dnp = get_picklist(event_key)
     return {"ranking": ranking, "dnp": dnp}
 
 
 class PicklistData(BaseModel):
+    """
+    This model represents the data sent to the set_picklist endpoint.
+    """
     ranking: list[str]
     dnp: list[str]
 
 
 class UpdateListResponse(BaseModel):
+    """
+    This model represents the response from the set_picklist endpoint.
+    """
     deleted: int
 
 

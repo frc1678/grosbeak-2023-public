@@ -34,7 +34,7 @@ COLLECTION_KEYS: dict[DocumentTypes, list[str]] = {
 STATIC_FILE_TYPES = {"match-schedule", "team-list"}
 
 client: pymongo.MongoClient = pymongo.MongoClient(env.MONGO_URI)
-# db = client[DB_NAME]
+
 api_db = client["api"]
 
 if "credentials" not in api_db.list_collection_names():

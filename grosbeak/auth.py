@@ -27,7 +27,9 @@ def check_auth(api_key: str) -> int | None:
 
 
 async def get_auth_level(api_key_header: str = Security(api_key_header_auth)):
-    # logger.debug(f"api_key_header: {api_key_header}")
+    """
+    Verifies the api key and returns the auth level
+    """
     auth = check_auth(api_key_header)
     if auth is None:
         raise HTTPException(

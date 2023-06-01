@@ -11,6 +11,9 @@ router = APIRouter(prefix="/notes", dependencies=[Security(get_auth_level)])
 
 @router.get("/all")
 def all_notes(event_key: str = env.DB_NAME):
+    """
+    This endpoint gets all notes from the database for a given event and returns them in an object with the team number as the key and the notes as the value.
+    """
     db = client[event_key]
     collection = db["notes"]
     docs = serialize_documents(list(collection.find()))
@@ -19,6 +22,9 @@ def all_notes(event_key: str = env.DB_NAME):
 
 @router.get("/team/{team_number}")
 def team_notes(team_number: str, event_key: str = env.DB_NAME):
+    """
+    This endpoint gets the notes for a given team from the database returns an object with the team number and the notes.
+    """
     db = client[event_key]
     collection = db["notes"]
     note = collection.find_one({"team_number": team_number})
@@ -28,12 +34,20 @@ def team_notes(team_number: str, event_key: str = env.DB_NAME):
 
 
 class PutTeamNotes(BaseModel):
+    """
+    This model represents the data that is sent to the PUT /notes/team endpoint.
+    """
+
     team_number: str = Field(..., min_length=1)
     notes: str
 
 
 @router.put("/team/")
 def update_team_notes(data: PutTeamNotes, event_key: str = env.DB_NAME):
+    """
+    This endpoint updates the notes for a given team in the database.
+    It returns an empty object.
+    """
     db = client[event_key]
     collection = db["notes"]
     collection.update_one(

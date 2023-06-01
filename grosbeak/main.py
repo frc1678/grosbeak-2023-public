@@ -28,6 +28,3 @@ async def root():
 
 
 app.mount("/", StaticFiles(directory="web"), name="web")
-
-
-# print(list(map(lambda x: x.path,app.routes)))

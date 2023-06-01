@@ -13,6 +13,10 @@ from grosbeak.env import env
 
 
 class ConnectionManager:
+    """
+    Manages connections to a websocket.
+    """
+
     def __init__(self):
         self.active_connections: dict[str, WebSocket] = {}
 
@@ -42,6 +46,10 @@ class ConnectionManager:
 
 
 class PicklistConnectionManager(ConnectionManager):
+    """
+    Manages connections to the picklist websocket.
+    """
+
     current_editor: str | None = None
 
     def login(self, password: str, user: str) -> bool:
@@ -67,32 +75,63 @@ class PicklistConnectionManager(ConnectionManager):
 
 
 class MessageRequest:
+    """
+    An enum of all possible request message types.
+    """
+
     class PicklistUpdate(BaseModel):
+        """
+        This model represents a request to update the picklist.
+        """
+
         type: Literal["picklist_update"]
         to_place: int
         from_place: int
 
     class DNPToggle(BaseModel):
+        """
+        This model represents a request to toggle a team's DNP status.
+        """
+
         type: Literal["dnp_update"]
         team_number: int
 
     class StartEdit(BaseModel):
+        """
+        This model represents a request to start editing the picklist.
+        """
+
         type: Literal["start_edit"]
         password: str
 
 
 class MessageResponse:
+    """
+    An enum of all possible response message types.
+    """
+
     class PicklistData(BaseModel):
+        """
+        This model represents a response containing the picklist data.
+        """
+
         type: Literal["picklist_data"] = "picklist_data"
         ranking: list[int]
         dnp: list[int]
 
     class Login(BaseModel):
+        """
+        This model represents a response to a login request.
+        """
+
         type: Literal["login"] = "login"
         success: bool
 
 
 def get_max_rank(arr: list[dict[str, Any]]) -> int:
+    """
+    This function returns the maximum rank in a list of picklist items.
+    """
     place_list = set(map(lambda e: e["rank"], arr))
     if len(place_list) == 0:
         return 0
@@ -100,6 +139,9 @@ def get_max_rank(arr: list[dict[str, Any]]) -> int:
 
 
 def update_picklist(to_place: int, from_place: int, event_key: str):
+    """
+    This function updates the picklist in the database.
+    """
     if to_place == from_place:
         return
     logger.info(f"Received request to update picklist from {from_place} to {to_place}")
@@ -135,6 +177,9 @@ def update_picklist(to_place: int, from_place: int, event_key: str):
 
 
 def toggle_dnp(team_number: int, event_key: str):
+    """
+    This function toggles a team's DNP status.
+    """
     collection = client[event_key]["picklist"]
     current_item = collection.find_one({"team_number": team_number})
     max_rank = get_max_rank(list(collection.find()))
@@ -163,6 +208,9 @@ def toggle_dnp(team_number: int, event_key: str):
 
 
 def get_picklist(event_key: str) -> Tuple[list[int], list[int]]:
+    """
+    This function returns the picklist from the database.
+    """
     db = client[event_key]
     collection = db["picklist"]
     picklist_items = list(collection.find())
@@ -189,6 +237,9 @@ picklist_manager = PicklistConnectionManager()
 
 
 async def reinform_clients(event_key: str):
+    """
+    This function sends the updated picklist to all clients.
+    """
     new_picklist, dnp_list = get_picklist(event_key)
     logger.info(f"New picklist: {new_picklist}")
     logger.info(f"DNP list: {dnp_list}")
@@ -197,6 +248,9 @@ async def reinform_clients(event_key: str):
 
 
 async def handle_message(message: dict, websocket_id: str, event_key: str):
+    """
+    This function handles a message from a client.
+    """
     if message["type"] == "picklist_update":
         update_request_data = MessageRequest.PicklistUpdate(**message)
         update_picklist(
@@ -224,6 +278,9 @@ async def handle_message(message: dict, websocket_id: str, event_key: str):
 
 
 async def websocket_picklist(websocket: WebSocket, event_key: str):
+    """
+    This function handles a websocket connection.
+    """
     connection_id = await picklist_manager.connect(websocket)
     picklist, dnp = get_picklist(event_key)
     logger.info("Initial picklist: " + str(picklist))
